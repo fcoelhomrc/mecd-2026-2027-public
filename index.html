@@ -3,29 +3,175 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MDSE — Signal Processing notebooks</title>
+<title>MDSE Signal Processing</title>
+<meta name="description" content="Interactive signal processing notebooks for MDSE, Fundamentals in Data Engineering. Runs entirely in the browser, no install, no server.">
+<meta name="theme-color" content="#fbfbfa">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0iIzE4MTgxYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMS41IiBmb250LWZhbWlseT0ic3lzdGVtLXVpLCAtYXBwbGUtc3lzdGVtLCBTZWdvZSBVSSwgUm9ib3RvLCBIZWx2ZXRpY2EgTmV1ZSwgQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtd2VpZ2h0PSI3MDAiIGxldHRlci1zcGFjaW5nPSIwLjUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNmNWY1ZjQiPlNQPC90ZXh0Pjwvc3ZnPg==">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MDSE Signal Processing">
+<meta property="og:title" content="MDSE Signal Processing">
+<meta property="og:description" content="Interactive signal processing notebooks for MDSE, Fundamentals in Data Engineering. Runs entirely in the browser, no install, no server.">
 <style>
-  body {
-    font-family: system-ui, -apple-system, sans-serif;
-    max-width: 40rem;
-    margin: 3rem auto;
-    padding: 0 1rem;
-    line-height: 1.5;
+  :root {
+    --bg: #fbfbfa;
+    --fg: #18181b;
+    --muted: #6b6b70;
+    --border: #e5e5e3;
+    --accent: #2452c9;
   }
-  h1 { font-size: 1.5rem; }
-  ul { padding-left: 1.2rem; }
-  li { margin: 0.4rem 0; }
-  a { color: #0b5fff; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  p.note { color: #666; font-size: 0.9rem; }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101012;
+      --fg: #f2f2f0;
+      --muted: #97979d;
+      --border: #29292c;
+      --accent: #7c9dff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+  }
+  .container {
+    max-width: 42rem;
+    margin: 0 auto;
+    padding: 5.5rem 1.5rem 4rem;
+  }
+  @media (max-width: 640px) {
+    .container { padding: 3.5rem 1.25rem 3rem; }
+  }
+  .eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 0.9rem;
+  }
+  h1 {
+    font-size: clamp(2.1rem, 5vw, 2.75rem);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin: 0 0 1.1rem;
+    font-weight: 700;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 34rem;
+    margin: 0 0 3.25rem;
+  }
+  .list {
+    border-top: 1px solid var(--border);
+  }
+  .item {
+    display: block;
+    padding: 1.6rem 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+  }
+  .item-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .item-name {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+  .item-index {
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .item-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    transition: color 0.15s ease;
+  }
+  .item:hover .item-title { color: var(--accent); }
+  .item-arrow {
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: transform 0.15s ease, color 0.15s ease;
+  }
+  .item:hover .item-arrow {
+    color: var(--accent);
+    transform: translateX(3px);
+  }
+  .item-desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0.4rem 0 0 1.6rem;
+  }
+  .empty {
+    color: var(--muted);
+    padding: 1.6rem 0;
+  }
+  footer {
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
 </style>
 </head>
 <body>
-<h1>MDSE — Signal Processing notebooks</h1>
-<p>Runs entirely in your browser (Pyodide). Nothing is sent to a server.</p>
-<ul>
-  <li><a href="./L1_sampling/">L1 — Sampling</a></li>
-</ul>
-<p class="note">Source: MDSE, Fundamentals in Data Engineering.</p>
+<div class="container">
+  <p class="eyebrow">MDSE, Fundamentals in Data Engineering</p>
+  <h1>Signal Processing</h1>
+  <p class="subtitle">
+    Interactive notebooks for the lecture series. Everything runs in the
+    browser: no install, no account, no data leaving the device.
+  </p>
+  <div class="list">
+    <a class="item" href="./L1_sampling/">
+      <div class="item-row">
+        <div class="item-name">
+          <span class="item-index">L1</span>
+          <span class="item-title">Sampling</span>
+        </div>
+        <span class="item-arrow">&#8594;</span>
+      </div>
+      <p class="item-desc">Discrete signals, the sampling theorem, aliasing, and LTI systems.</p>
+    </a>
+    <a class="item" href="./L2_dft/">
+      <div class="item-row">
+        <div class="item-name">
+          <span class="item-index">L2</span>
+          <span class="item-title">Discrete Fourier Transform</span>
+        </div>
+        <span class="item-arrow">&#8594;</span>
+      </div>
+      <p class="item-desc">Spectra, the FFT, spectral leakage, and the STFT.</p>
+    </a>
+    <a class="item" href="./L3_zt_filters/">
+      <div class="item-row">
+        <div class="item-name">
+          <span class="item-index">L3</span>
+          <span class="item-title">Z-Transform and Filtering</span>
+        </div>
+        <span class="item-arrow">&#8594;</span>
+      </div>
+      <p class="item-desc">Frequency response, pole-zero design, and FIR/IIR filters.</p>
+    </a>
+  </div>
+  <footer>
+    Built with marimo, exported to WebAssembly. Each notebook is
+    self-contained and stays open source under its own license.
+  </footer>
+</div>
 </body>
 </html>
