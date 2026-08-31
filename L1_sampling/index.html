@@ -539,7 +539,11 @@ body {
    figure from pushing a slide into a scroll container. */
 .mo-frame img {
   max-width: 100%;
-  max-height: 30vh;
+  /* Linear in viewport height rather than a flat vh: matches the old
+     safe ~230px at 768 tall (a flat 40vh there pushed a slide into a
+     scroll container) and opens up to ~576px at 1440, where there is
+     room to spare. */
+  max-height: clamp(200px, 51.5vh - 165px, 620px);
   width: auto;
   height: auto;
 }
