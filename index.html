@@ -14,10 +14,6 @@
 <style>
 
   @font-face {
-    font-family: "Lora"; font-style: normal; font-weight: 400 700;
-    font-display: swap; src: url("./L1_sampling/assets/Lora-VariableFont_wght-CZceb_kH.woff2") format("woff2");
-  }
-  @font-face {
     font-family: "PT Sans"; font-style: normal; font-weight: 400;
     font-display: swap; src: url("./L1_sampling/assets/PTSans-Regular-Bam3NpBI.woff2") format("woff2");
   }
@@ -34,7 +30,9 @@
     --muted-foreground: #64748b;
     --border: #e2e8f0;
     --primary: #0880ea;
-    --heading-font: "Lora", serif;
+    /* Same stack assets/projector.css gives .reveal h1-h4 in the decks. */
+    --heading-font: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+      sans-serif;
     --text-font: "PT Sans", sans-serif;
   }
   @media (prefers-color-scheme: dark) {
@@ -64,7 +62,7 @@
   h1 {
     font-family: var(--heading-font);
     font-size: clamp(2rem, 5vw, 2.5rem);
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.2;
     letter-spacing: -0.01em;
     margin: 0 0 2.5rem;
@@ -88,7 +86,7 @@
   .item-title {
     font-family: var(--heading-font);
     font-size: 1.2rem;
-    font-weight: 700;
+    font-weight: 600;
     transition: color 0.15s ease;
   }
   .item-arrow {
