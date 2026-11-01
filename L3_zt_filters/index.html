@@ -613,6 +613,56 @@ body {
   min-height: 1.2em;
   font-weight: 650;
 }
+
+/* Small analytic examples redraw in Canvas and pure-arithmetic examples update
+   in the DOM. Both are ready on first paint and never wait for Python/WASM. */
+.client-demo,
+.client-calculator {
+  width: min(100%, 1120px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.client-demo canvas[data-client-canvas] {
+  display: block;
+  width: min(100%, 1050px);
+  height: auto;
+  background: #fff;
+}
+
+.client-calculator-controls {
+  width: min(100%, 1060px);
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.client-select-control {
+  min-width: 170px;
+  display: grid;
+  gap: 5px;
+  text-align: left;
+  font-size: 0.78em;
+}
+
+.client-select-control select {
+  min-height: 38px;
+  padding: 5px 30px 5px 9px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  background: white;
+  color: #18181b;
+  font: inherit;
+  cursor: pointer;
+}
+
+.client-calculator p {
+  margin: 0;
+}
 </style><!-- Shared <head> injection for every exported lecture notebook, wired via
      each lecture's `marimo.App(html_head_file="../assets/head.html")`.
      Only allowed under `marimo export` (mode=run), not live `marimo edit`,
@@ -721,12 +771,180 @@ body {
     if (!slide || slide.classList.contains("present")) initialize(box);
   }
 
+  const clientValues = (control) => control.dataset.values
+    ? JSON.parse(control.dataset.values)
+    : null;
+
+  function clientState(box) {
+    return [...box.querySelectorAll("[data-client-axis]")].map((control) => {
+      const choices = clientValues(control);
+      return Number(choices ? choices[Number(control.value)] : control.value);
+    });
+  }
+
+  function plotCanvas(canvas, xMin, xMax, yMin, yMax) {
+    const context = canvas.getContext("2d");
+    const width = canvas.width;
+    const height = canvas.height;
+    const margin = {left: 68, right: 22, top: 30, bottom: 53};
+    const x = (value) => margin.left + (value - xMin) / (xMax - xMin)
+      * (width - margin.left - margin.right);
+    const y = (value) => height - margin.bottom - (value - yMin) / (yMax - yMin)
+      * (height - margin.top - margin.bottom);
+    context.clearRect(0, 0, width, height);
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, width, height);
+    context.strokeStyle = "#d6d6d6";
+    context.lineWidth = 1.5;
+    context.beginPath();
+    context.moveTo(x(xMin), y(0));
+    context.lineTo(x(xMax), y(0));
+    context.moveTo(x(xMin), y(yMin));
+    context.lineTo(x(xMin), y(yMax));
+    context.stroke();
+    context.fillStyle = "#333";
+    context.font = "18px system-ui, sans-serif";
+    context.textAlign = "center";
+    context.fillText("t [s]", (margin.left + width - margin.right) / 2, height - 13);
+    context.textAlign = "right";
+    for (const tick of [yMin, 0, yMax]) {
+      context.fillText(Number(tick.toFixed(1)).toString(), margin.left - 13, y(tick) + 6);
+    }
+    return {context, x, y, width, height, margin};
+  }
+
+  function line(plot, count, sample, color, width = 3, dash = []) {
+    const {context, x, y} = plot;
+    context.save();
+    context.strokeStyle = color;
+    context.lineWidth = width;
+    context.setLineDash(dash);
+    context.beginPath();
+    for (let index = 0; index < count; index += 1) {
+      const [px, py] = sample(index / (count - 1));
+      if (index === 0) context.moveTo(x(px), y(py));
+      else context.lineTo(x(px), y(py));
+    }
+    context.stroke();
+    context.restore();
+  }
+
+  function legend(plot, entries) {
+    const {context, width, margin} = plot;
+    context.save();
+    context.font = "17px system-ui, sans-serif";
+    context.textAlign = "left";
+    let cursor = margin.left;
+    for (const [label, color, dash] of entries) {
+      context.strokeStyle = color;
+      context.lineWidth = 4;
+      context.setLineDash(dash || []);
+      context.beginPath();
+      context.moveTo(cursor, 14);
+      context.lineTo(cursor + 29, 14);
+      context.stroke();
+      context.fillStyle = "#333";
+      context.fillText(label, cursor + 37, 20);
+      cursor += Math.min(300, 55 + context.measureText(label).width);
+      if (cursor > width - 240) cursor = margin.left;
+    }
+    context.restore();
+  }
+
+  function updateClientDemo(box) {
+    const controls = [...box.querySelectorAll("[data-client-axis]")];
+    controls.forEach((control, axis) => {
+      const output = box.querySelector(`[data-client-value="${axis}"]`);
+      const choices = clientValues(control);
+      if (output) output.textContent = choices
+        ? choices[Number(control.value)]
+        : control.value;
+    });
+    const state = clientState(box);
+    const kind = box.dataset.clientDemo;
+    if (kind === "audio") {
+      const [sourceRate, modelRate, channels, minutes] = state;
+      const source = sourceRate * channels * minutes * 60;
+      const model = modelRate * channels * minutes * 60;
+      const ratio = model / source;
+      const change = ratio <= 1
+        ? `${Math.round(100 * (1 - ratio))}% fewer`
+        : `${Math.round(100 * (ratio - 1))}% more`;
+      box.querySelector("[data-client-source]").innerHTML =
+        `Source: <strong>${(source / 1e6).toFixed(1)} million samples</strong>`;
+      box.querySelector("[data-client-model]").innerHTML =
+        `Model input: <strong>${(model / 1e6).toFixed(1)} million samples</strong>, `
+        + `<strong>${change}</strong>`;
+    } else if (kind === "sinusoid") {
+      const [amplitude, frequency, phase] = state;
+      const plot = plotCanvas(box.querySelector("[data-client-canvas]"), 0, 2, -2.1, 2.1);
+      line(plot, 1000, (fraction) => {
+        const time = 2 * fraction;
+        return [time, amplitude * Math.sin(2 * Math.PI * frequency * time - phase)];
+      }, "#1f77b4");
+      legend(plot, [["x(t)", "#1f77b4"]]);
+    } else if (kind === "aliasing") {
+      const [frequency, sampleRate] = state;
+      const multiple = Math.round(frequency / sampleRate);
+      const signedAlias = frequency - multiple * sampleRate;
+      const alias = Math.abs(signedAlias);
+      const plot = plotCanvas(box.querySelector("[data-client-canvas]"), 0, 0.1, -1.2, 1.2);
+      line(plot, 2000, (fraction) => {
+        const time = 0.1 * fraction;
+        return [time, Math.sin(2 * Math.PI * frequency * time)];
+      }, "#bdbdbd", 2.5);
+      line(plot, 2000, (fraction) => {
+        const time = 0.1 * fraction;
+        return [time, Math.sin(2 * Math.PI * signedAlias * time)];
+      }, "#ff7f0e", 3, [9, 7]);
+      const {context, x, y} = plot;
+      context.strokeStyle = "#1f77b4";
+      context.fillStyle = "#1f77b4";
+      context.lineWidth = 2;
+      const samples = Math.floor(0.1 * sampleRate) + 1;
+      for (let index = 0; index < samples; index += 1) {
+        const time = index / sampleRate;
+        const value = Math.sin(2 * Math.PI * frequency * time);
+        context.beginPath(); context.moveTo(x(time), y(0)); context.lineTo(x(time), y(value)); context.stroke();
+        context.beginPath(); context.arc(x(time), y(value), 5, 0, 2 * Math.PI); context.fill();
+      }
+      legend(plot, [
+        [`true, ${frequency} Hz`, "#bdbdbd"],
+        [`alias, ${alias} Hz`, "#ff7f0e", [9, 7]],
+        [`samples, fs=${sampleRate} Hz`, "#1f77b4"],
+      ]);
+      box.querySelector("[data-client-caption]").textContent = `observed as ${alias} Hz`;
+    }
+    box.dataset.clientRevision = String(performance.now());
+  }
+
+  function initializeClientDemo(box) {
+    if (!box.dataset.clientRevision) updateClientDemo(box);
+  }
+
   document.addEventListener("input", (event) => {
     const input = event.target.closest?.("input[data-cache-axis]");
     if (input) update(input.closest("[data-cache-root]"));
+    const control = event.target.closest?.("[data-client-axis]");
+    if (control) updateClientDemo(control.closest("[data-client-demo]"));
+  });
+  document.addEventListener("change", (event) => {
+    const control = event.target.closest?.("[data-client-axis]");
+    if (control) updateClientDemo(control.closest("[data-client-demo]"));
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.target.closest?.("[data-cache-axis], [data-client-axis]")) {
+      event.stopPropagation();
+    }
+  }, true);
+  document.addEventListener("pointerdown", (event) => {
+    if (event.target.closest?.("[data-cache-axis], [data-client-axis]")) {
+      event.stopPropagation();
+    }
   });
   document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-cache-root]").forEach(initializeIfPresented);
+    document.querySelectorAll("[data-client-demo]").forEach(initializeClientDemo);
   });
   new MutationObserver((mutations) => {
     for (const mutation of mutations) {
@@ -741,6 +959,8 @@ body {
         if (!(node instanceof Element)) continue;
         if (node.matches?.("[data-cache-root]")) initializeIfPresented(node);
         node.querySelectorAll?.("[data-cache-root]").forEach(initializeIfPresented);
+        if (node.matches?.("[data-client-demo]")) initializeClientDemo(node);
+        node.querySelectorAll?.("[data-client-demo]").forEach(initializeClientDemo);
       }
     }
   }).observe(document.documentElement, {
