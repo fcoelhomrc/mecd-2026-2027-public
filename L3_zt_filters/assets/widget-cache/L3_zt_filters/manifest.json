@@ -1,0 +1,12 @@
+{
+  "fingerprint": "d1c44cedcb99515ed2f25238d182479b040eeb58c97bbac5ef7e08fd235acb1c",
+  "quality": 78,
+  "states": {
+    "moving_average_response": 31,
+    "ecg_lowpass": 20,
+    "co2_highpass": 12,
+    "co2_bandpass": 88,
+    "ecg_notch": 208
+  },
+  "total_states": 359
+}

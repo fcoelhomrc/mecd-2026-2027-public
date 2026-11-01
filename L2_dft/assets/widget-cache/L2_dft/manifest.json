@@ -1,0 +1,16 @@
+{
+  "fingerprint": "8ec9f8d749ae06f7fec8e191d9b3c9206b809028ec266509151e4bd0eeee14c7",
+  "quality": 78,
+  "states": {
+    "harmonic_synthesis": 7,
+    "sampling_rate_bins": 21,
+    "record_length_bins": 16,
+    "dc_offset": 21,
+    "spectral_leakage": 41,
+    "hann_window": 2,
+    "zero_padding": 120,
+    "alias_spectrum": 35,
+    "spectrogram_slice": 23
+  },
+  "total_states": 286
+}
