@@ -1,13 +1,12 @@
 {
-  "fingerprint": "4576667a0038159cadad970f086bee0d63d97f55a180f7ff669b90119cdb777a",
+  "fingerprint": "d775db60cfe1e5da0ab5cdea9711de94fd18b0531748fd611891b85a906c3ca2",
   "quality": 78,
   "states": {
     "complex_exponential": 64,
     "convolution": 9,
     "moving_average": 15,
     "feedback_stability": 27,
-    "anti_alias_downsampling": 18,
     "reconstruction": 2
   },
-  "total_states": 135
+  "total_states": 117
 }
