@@ -319,6 +319,10 @@ body, .reveal-viewport, .reveal, .reveal .slides { background: #fff; color: var(
 .sp-body li { margin: 0.28em 0; }
 .sp-body h3 { font-family: var(--serif); font-weight: 700; font-size: 1.02rem; color: var(--navy); margin: 0.7em 0 0.2em; }
 .sp-body .katex-display { margin: 0.6em 0; font-size: 1.1em; }
+/* KaTeX draws fraction bars as a 0.04em border, under 1px here. On a 1.5x screen Chrome snaps
+   that to one device pixel and the slide's scale shrinks it further, so short bars (\tfrac)
+   vanish. marimo copies this sheet into each marimo-tex shadow root, so the rule reaches them. */
+.katex .frac-line { border-bottom-width: max(0.04em, 1.5px) !important; }
 .sp-muted { color: var(--mute); }
 .warn { color: #c4421a; }
 .sp-body sub, .sp-body sup { font-size: 0.7em; }
