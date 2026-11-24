@@ -362,7 +362,15 @@ body, .reveal-viewport, .reveal, .reveal .slides { background: #fff; color: var(
 /* code card, light */
 .sp-body pre { background: #f5f7fa; border: 1.5px solid var(--line); border-radius: 8px; padding: 0.7em 1em; margin: 0.5em 0; font-size: 0.82rem; line-height: 1.5; overflow-x: auto; text-align: left; }
 .sp-body pre code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; background: none; color: var(--ink); }
-.sp-body pre .k { color: #7b3fb0; } .sp-body pre .f { color: #1f5fae; } .sp-body pre .c { color: #7c8894; } .sp-body pre .n { color: #c4421a; }
+/* pygments token classes from mo.md code fences (code() in the L3 notebook) */
+.sp-body .codehilite pre { font-size: 0.95rem; }
+.sp-body pre .k, .sp-body pre .kn { color: #7b3fb0; font-weight: 600; }
+.sp-body pre .nf, .sp-body pre .nb { color: #1f5fae; }
+.sp-body pre .nn { color: #0b7a6f; }
+.sp-body pre .mi, .sp-body pre .mf { color: #c4421a; }
+.sp-body pre .s1, .sp-body pre .s2 { color: #1a7f37; }
+.sp-body pre .c1 { color: #7c8894; font-style: italic; }
+.sp-body pre .o { color: #66727f; }
 
 /* ---- figures and widgets ---- */
 .sp-demo, .sp-figure { width: 100%; }
@@ -467,6 +475,8 @@ body, .reveal-viewport, .reveal, .reveal .slides { background: #fff; color: var(
 
 /* ---- step-by-step reveal: hidden until its key press, no transition ---- */
 .sp-step:not(.on) { visibility: hidden; }
+.sp-build { position: relative; }
+.sp-build > .sp-step { position: absolute; inset: 0; background: #fff; }
 @media print { .sp-step { visibility: visible !important; } }
 
 /* ---- term-by-term map: a row of terms, an arrow under each, the matching row of results ---- */
@@ -491,6 +501,51 @@ body, .reveal-viewport, .reveal, .reveal .slides { background: #fff; color: var(
 .sp-note th { text-align: left; font-size: 0.8rem; color: var(--mute); font-weight: 600; padding: 0.2em 0.4em; }
 .sp-note td { padding: 0.5em 0.5em; vertical-align: middle; white-space: nowrap; border-top: 1px solid var(--line); }
 .sp-note td:last-child { color: var(--mute); font-size: 0.8rem; }
+
+/* ---- L3 filter widget: the scipy calls in a floating window styled as a macOS terminal ---- */
+.l3-term { position: absolute; bottom: 2.3rem; right: 2.2rem; z-index: 7; background: #1e2127; border-radius: 9px; overflow: hidden; text-align: left;
+  box-shadow: 0 10px 28px rgba(10, 15, 25, .32), 0 0 0 1px rgba(0, 0, 0, .45); }
+.l3-term[hidden] { display: none; }
+.l3-term .bar { position: relative; display: flex; align-items: center; gap: 0.4rem; height: 1.45rem; padding: 0 0.6rem; background: linear-gradient(#3b3e45, #2e3137); cursor: move; user-select: none; }
+.l3-term .bar i { display: block; width: 0.66rem; height: 0.66rem; border-radius: 50%; }
+.l3-term .bar .r { background: #ff5f57; cursor: pointer; }
+.l3-term .bar .y { background: #febc2e; }
+.l3-term .bar .g { background: #28c840; }
+.l3-term .bar span { position: absolute; inset: 0; display: grid; place-items: center; font: 600 0.62rem var(--sans); color: #a3a8b2; pointer-events: none; }
+.l3-term .code { padding: 0.45rem 0.9rem 0.6rem; font: 0.82rem/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: #dcdfe4; white-space: pre; }
+.l3-term .kw { color: #c678dd; }
+.l3-term .fn { color: #61afef; }
+.l3-term .nu { color: #d19a66; }
+.l3-term .st { color: #98c379; }
+.l3-term .ar { color: #e06c75; }
+.l3-term-btn { position: absolute; right: 7rem; bottom: 2.7rem; z-index: 6; background: #1e2127; border: 1.5px solid #1e2127; border-radius: 999px;
+  padding: 0.15em 0.9em; font: 0.8rem ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: #dcdfe4; cursor: pointer; }
+.sp-demo[data-sp="ftypes"] .sp-ctl { min-width: 150px; }
+.l3-ftgrid { gap: 0 22px; }
+.sp-demo[data-sp="ftypes"] .sp-cap { text-align: left; padding-left: 2rem; }
+
+/* caption split into labelled blocks */
+.sp-blocks { display: flex; justify-content: center; gap: 0.9rem; margin-top: 14px; text-align: left; }
+.sp-blk { flex: 1 1 0; max-width: 12rem; background: var(--tint); border-left: 4px solid var(--blue); border-radius: 4px; padding: 0.45em 0.8em; font-size: 0.82rem; }
+.sp-blk .h { font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--mute); margin-bottom: 0.25em; }
+.sp-more .scroll { max-height: calc(100vh - 21rem); overflow-y: auto; padding-right: 0.6em; }
+/* a text box above a widget leaves less room for the plots */
+.sp-body > .sp-box ~ .sp-demo .sp-out.row .sp-svg { max-height: calc(100vh - 27rem); }
+.sp-body > .sp-box ~ .sp-demo .sp-out:not(.row) .sp-svg { max-height: calc(100vh - 26rem); }
+/* L3 slides 1-23 (l3- prefix): complex-product table, Python rows, aliasing plots */
+.l3-cx { display: grid; grid-template-columns: auto auto auto; column-gap: 1.6em; row-gap: 0.1em; align-items: center; justify-content: start; margin-top: 0.8em; font-size: 1.05rem; }
+.l3-cx .h { font-size: 0.8rem; color: var(--mute); }
+.l3-cx p { margin: 0.2em 0; }
+.l3-cx > div { white-space: nowrap; }
+.l3-pyrows { margin-top: 0.4em; }
+.l3-py { display: grid; grid-template-columns: 3fr 2fr; column-gap: 2em; }
+.l3-py > div:first-child { display: flex; align-items: center; background: #f5f7fa; border: 1.5px solid var(--line); border-block-width: 0; }
+.l3-py > div:last-child { align-self: center; }
+.l3-py pre { margin: 0 !important; border: 0 !important; background: none !important; }
+.l3-py button { display: none; }
+.l3-pyrows > .l3-py:first-child > div:first-child { border-top-width: 1.5px; border-radius: 8px 8px 0 0; }
+.l3-pyrows > .l3-py:last-child > div:first-child { border-bottom-width: 1.5px; border-radius: 0 0 8px 8px; }
+.l3-py .codehilite-wrapper { flex: 1; min-width: 0; }
 </style><!-- <head> injection shared by the redesigned lecture notebooks (L1 and L2),
      wired through `marimo.App(html_head_file="../assets/sp_head.html")`. L3
      still uses head.html. Demos register by name, so a notebook only mounts
@@ -635,9 +690,9 @@ function plot(o) {
   }
   for (const v of xt) s += tag("text", {x: sx(v), y: H - m.b + 24, text_anchor: "middle", class: "t"}, num(v, 2));
   if (o.bare) {
-    // complex-plane style: axes cross at the origin, with arrow heads, no ticks
+    // complex-plane style: axes cross at the origin, with arrow heads, no ticks; bare: "x" keeps only the horizontal axis
     s += tag("line", {x1: sx(x0), x2: sx(x1), y1: sy(0), y2: sy(0), stroke: C.axis, stroke_width: 2, marker_end: `url(#${id}a)`});
-    s += tag("line", {x1: sx(0), x2: sx(0), y1: sy(y0), y2: sy(y1), stroke: C.axis, stroke_width: 2, marker_end: `url(#${id}a)`});
+    if (o.bare !== "x") s += tag("line", {x1: sx(0), x2: sx(0), y1: sy(y0), y2: sy(y1), stroke: C.axis, stroke_width: 2, marker_end: `url(#${id}a)`});
   } else {
     if (y0 < 0 && y1 > 0) s += tag("line", {x1: m.l, x2: W - m.r, y1: sy(0), y2: sy(0), stroke: C.axis, stroke_width: 1.6});
     s += tag("line", {x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, stroke: C.axis, stroke_width: 1.6});
@@ -1336,16 +1391,8 @@ function dftOf(x, nfft = x.length) {
 }
 const magsOf = ({re, im}) => Array.from(re, (r, i) => Math.hypot(r, im[i]));
 const dB = (m) => 20 * Math.log10(Math.max(m, 1e-9));
-const WINS = {
-  rect: ["Rectangular", () => 1],
-  hann: ["Hann", (n, N) => 0.5 - 0.5 * Math.cos(TAU * n / N)],
-  hamming: ["Hamming", (n, N) => 0.54 - 0.46 * Math.cos(TAU * n / N)],
-  blackman: ["Blackman", (n, N) => 0.42 - 0.5 * Math.cos(TAU * n / N) + 0.08 * Math.cos(2 * TAU * n / N)],
-};
-const winOf = (type, N) => ints(0, N - 1).map((n) => WINS[type][1](n, N));
-const winOptions = Object.entries(WINS).map(([k, v]) => [k, v[0]]);
-const piTicks = [-1, -0.5, 0, 0.5, 1];
-const cosSeq = (f, N, ph = 0) => ints(0, N - 1).map((n) => Math.cos(TAU * f * n / N + ph));
+const WINS = {rect: () => 1, hann: (n, N) => 0.5 - 0.5 * Math.cos(TAU * n / N)};
+const winOf = (type, N) => ints(0, N - 1).map((n) => WINS[type](n, N));
 // DTFT of a finite sequence (values v starting at n0) at angular frequency w
 function dtftAt(v, n0, w) {
   let re = 0, im = 0;
@@ -1353,432 +1400,96 @@ function dtftAt(v, n0, w) {
   return [re, im];
 }
 const wrapPi = (a) => a - TAU * Math.round(a / TAU);
-const ramp = (t) => {
-  const stops = [[244, 248, 253], [120, 170, 226], [42, 120, 214], [18, 58, 115]];
-  const p = Math.min(0.9999, Math.max(0, t)) * 3, i = Math.floor(p), f = p - i;
-  return stops[i].map((c, k) => Math.round(c + (stops[i + 1][k] - c) * f));
-};
 
-// ---- the unit circle: e^{j w n} as a rotating phasor
-demo("phasor", {
+// ---- zero-padding against more samples, on x[n] = cos(2pi 19 n/fs) + cos(2pi 21 n/fs), fs = 100 Hz.
+// Slider L pads N = 20 samples with zeros up to L; slider N takes N samples of the signal (hide one of
+// the two). Right: the DTFT of the samples (line) and the DFT (dots), which samples it.
+demo("dftlen", {
   controls: [
-    {id: "w", label: "rotation per sample $\\omega/\\pi$", min: 0.02, max: 1, step: 0.01, value: 0.25, fmt: (v) => `$${num(v, 2)}\\pi$`},
-    {id: "n", label: "samples shown $n$", min: 0, max: 16, step: 1, value: 6, fmt: (v) => `${v}`},
-    {id: "cont", type: "seg", label: "continuous curves", value: "off", options: [["off", "Off"], ["on", "On"]]},
+    {id: "L", label: "padded length $L$", min: 20, max: 200, step: 10, value: 20, fmt: (v) => `${v}`},
+    {id: "N", label: "number of samples $N$", min: 20, max: 200, step: 10, value: 20, fmt: (v) => `${v}`},
   ],
-  draw: ({w, n, cont}) => {
-    const th = w * PI, circ = lin(0, TAU, 120), ks = ints(0, n), all = ints(0, 16), fine = lin(0, 16, 400);
-    const cx = ks.map((k) => Math.cos(th * k)), cy = ks.map((k) => Math.sin(th * k));
-    const ex = Math.cos(th * n), ey = Math.sin(th * n);
-    const curves = cont === "on"
-      ? [{t: "line", xs: fine, ys: fine.map((t) => Math.cos(th * t)), color: C.blue, w: 2}, {t: "line", xs: fine, ys: fine.map((t) => Math.sin(th * t)), color: C.aqua, w: 2}]
-      : [];
-    const mm = {l: 34, r: 20, t: 40, b: 50};
+  draw: ({L, N}) => {
+    const fs = 100, pad = L !== undefined, M = pad ? 20 : N, len = pad ? L : N, T = M / fs;
+    const sig = (t) => Math.cos(TAU * 19 * t) + Math.cos(TAU * 21 * t);
+    const x = ints(0, M - 1).map((n) => sig(n / fs));
+    const mag = (f) => Math.hypot(...dtftAt(x, 0, TAU * f / fs));
+    const fr = lin(9, 31, 441), curve = fr.map(mag), top = Math.max(...curve) * 1.15;
+    const fk = ints(Math.ceil(9 * len / fs), Math.floor(31 * len / fs)).map((k) => k * fs / len);
+    const box = {flex: 1, w: 460, h: 210, m: {l: 52, r: 14, t: 40, b: 54}, y: [-2.4, 2.4], yt: [-2, 0, 2]};
+    const dense = len > 60, zs = ints(M, len - 1);
+    // padding: x[n] then the zeros, against n. More samples: x[n] on a 2 s axis, the measured T seconds shaded.
+    const time = pad
+      ? {...box, x: [-0.5, len - 0.5], xt: niceTicks(0, len - 1, 4), xlabel: "$n$",
+        legend: [["$x[n]$", C.blue, "stem"], ["zeros", C.mute, "dot"]],
+        layers: [{t: "stem", xs: ints(0, M - 1), ys: x, color: C.blue, r: dense ? 0 : 3, w: dense ? 1.4 : 2},
+          {t: "dots", xs: zs, ys: zs.map(() => 0), color: C.mute, r: dense ? 1.6 : 3}]}
+      : {...box, x: [-0.02, 2.02], y: [-2.4, 3.4], xt: [0, 0.5, 1, 1.5, 2], xlabel: "time (s)", vgrid: false,
+        legend: [["$x[n]$", C.blue, "stem"]],
+        layers: [{t: "band", x0: 0, x1: T, color: C.blue, op: 0.08},
+          {t: "vline", x: T, color: C.blue, w: 1.6, label: `T = ${num(T, 2)} s`, tcolor: C.blue, anchor: T > 1.5 ? "end" : "start", dx: T > 1.5 ? -6 : 6},
+          {t: "stem", xs: ints(0, M - 1).map((n) => n / fs), ys: x, color: C.blue, r: 0, w: 1.4}]};
     return {
       row: true,
       figs: [
-        {title: "$e^{j\\omega n}$", flex: 1, w: 321, h: 300, m: mm, x: [-1.5, 1.5], y: [-1.18, 1.18], xt: [-1, 0, 1], yt: [-1, 0, 1], nx: 3,
-          layers: [{t: "line", xs: circ.map(Math.cos), ys: circ.map(Math.sin), color: C.soft, w: 2},
-            {t: "line", xs: [0, ex], ys: [0, ey], color: C.orange, w: 2.4},
-            {t: "line", xs: [ex, ex], ys: [ey, 0], color: C.blue, w: 1.8, dash: "6 5"},
-            {t: "line", xs: [ex, 0], ys: [ey, ey], color: C.aqua, w: 1.8, dash: "6 5"},
-            {t: "dots", xs: cx, ys: cy, color: C.blue, r: 4.5},
-            {t: "dots", xs: [ex], ys: [ey], color: C.orange, r: 8}]},
-        {title: "Real and imaginary parts", flex: 1.9, w: 612, h: 300, m: {l: 46, r: 12, t: 40, b: 50}, x: [-0.8, 16.8], y: [-1.18, 1.18], yt: [-1, 0, 1], xt: [0, 4, 8, 12, 16], xlabel: "$n$",
-          legend: [["$\\cos\\omega n$", C.blue, "stem"], ["$\\sin\\omega n$", C.aqua, "stem"]],
-          layers: curves.concat([{t: "vline", x: n, color: C.orange, w: 1.6, dash: "4 4"},
-            {t: "stem", xs: all, ys: all.map((k) => Math.cos(th * k)), color: C.blue, r: 3.6, w: 1.8},
-            {t: "stem", xs: all, ys: all.map((k) => Math.sin(th * k)), color: C.aqua, r: 3.6, w: 1.8, hollow: true}])},
+        time,
+        {...box, x: [9, 31], y: [0, top], xt: [10, 15, 20, 25, 30], yt: niceTicks(0, top * 0.95, 3), xlabel: "frequency (Hz)",
+          legend: [["$|X(e^{j\\omega})|$", C.blue, "line"], ["$|X[k]|$", C.orange, "dot"]],
+          layers: [{t: "vline", x: 19, color: C.axis, w: 1.6}, {t: "vline", x: 21, color: C.axis, w: 1.6},
+            {t: "line", xs: fr, ys: curve, color: C.blue, w: 2.4}, {t: "dots", xs: fk, ys: fk.map(mag), color: C.orange, r: len > 90 ? 3.4 : 4.6}]},
       ],
-      cap: `$e^{j\\omega n} = \\cos\\omega n + j\\sin\\omega n$`,
+      cap: pad ? `$N = 20,\\;\\; L = ${L},\\;\\; f_s/L = ${num(fs / L, 2)}$ Hz`
+        : `$N = ${N},\\;\\; T = N/f_s = ${num(T, 2)}$ s $\\;\\Rightarrow\\; \\Delta f = 1/T = ${num(fs / N, 2)}$ Hz`,
     };
   },
 });
 
-// ---- examples of the Fourier transform
-const DT = {
-  cos: "Sinusoid $\\cos(\\omega_0 n)$",
-  two: "Two sinusoids",
-  delta: "Unit sample $\\delta[n]$",
-  pulse: "Rectangular pulse",
-  exp: "Exponential $a^n u[n]$",
-};
-demo("dtft", {
-  controls: [
-    {id: "s", type: "seg", value: "cos", options: Object.entries(DT)},
-    {id: "p", label: "parameter", min: 0.05, max: 0.95, step: 0.01, value: 0.3, fmt: (v) => num(v, 2)},
-  ],
-  draw: ({s, p}) => {
-    const ns = ints(-8, 24), ws = lin(-1, 1, 400);
-    const L = Math.round(2 + 14 * p);
-    let xs, mag = null, lines = null, note;
-    if (s === "cos") { xs = ns.map((n) => Math.cos(p * PI * n)); lines = [[-p, 1], [p, 1]]; note = `$\\omega_0 = ${num(p, 2)}\\pi$`; }
-    else if (s === "two") { xs = ns.map((n) => Math.cos(p * PI * n) + 0.6 * Math.cos(0.8 * PI * n)); lines = [[-0.8, 0.6], [-p, 1], [p, 1], [0.8, 0.6]]; note = `$\\omega_0 = ${num(p, 2)}\\pi$ and $0.8\\pi$`; }
-    else if (s === "delta") { xs = ns.map((n) => (n === 0 ? 1 : 0)); mag = ws.map(() => 1); note = `$X(e^{j\\omega}) = 1$`; }
-    else if (s === "pulse") { xs = ns.map((n) => (n >= 0 && n < L ? 1 : 0)); mag = ws.map((q) => Math.hypot(...dtftAt(ints(0, L - 1).map(() => 1), 0, q * PI))); note = `Pulse of ${L} samples`; }
-    else { xs = ns.map((n) => (n >= 0 ? Math.pow(p, n) : 0)); mag = ws.map((q) => 1 / Math.hypot(1 - p * Math.cos(q * PI), p * Math.sin(q * PI))); note = `$a = ${num(p, 2)}$`; }
-    const top = lines ? 1.25 : Math.max(1.2, ...mag) * 1.1;
-    const spec = lines
-      ? {layers: [{t: "stem", xs: lines.map((q) => q[0]), ys: lines.map((q) => q[1]), color: C.orange, r: 5, w: 3}]}
-      : {layers: [{t: "area", xs: ws, ys: mag, color: C.orange, line: true, op: 0.15}]};
-    return {
-      row: true,
-      figs: [
-        {title: "Signal $x[n]$", flex: 1, w: 460, h: 300, m: {l: 46, r: 12, t: 40, b: 50}, x: [-8.8, 24.8], y: [-1.5, 1.5], xlabel: "$n$", yt: [-1, 0, 1], layers: [{t: "stem", xs: ns, ys: xs, color: C.blue, r: 3.2, w: 1.6}]},
-        {title: "Magnitude of the transform", flex: 1, w: 460, h: 300, m: {l: 46, r: 12, t: 40, b: 50}, x: [-1, 1], y: [0, top], xt: piTicks, xlabel: "$\\omega/\\pi$", ylabel: "$|X(e^{j\\omega})|$", ...spec},
-      ],
-      cap: note,
-    };
-  },
-});
-
-// ---- time shift: only the phase changes
-demo("shift", {
-  controls: [{id: "d", label: "delay $n_0$", min: -6, max: 6, step: 1, value: 3, fmt: (v) => `${v}`}],
-  draw: ({d}) => {
-    const base = [1, 2, 3, 2, 1], ns = ints(-8, 8), ws = lin(-1, 1, 360);
-    const xs = ns.map((n) => { const k = n - d + 2; return k >= 0 && k < 5 ? base[k] : 0; });
-    const mags = ws.map((q) => Math.hypot(...dtftAt(base, d - 2, q * PI)));
-    const pw = lin(-1, 1, 361).filter((q) => Math.hypot(...dtftAt(base, d - 2, q * PI)) > 1e-3);
-    const phs = pw.map((q) => { const [r, i] = dtftAt(base, d - 2, q * PI); return Math.atan2(i, r) / PI; });
-    return {
-      row: true,
-      figs: [
-        {title: "$x[n-n_0]$", w: 400, h: 290, m: {l: 46, r: 12, t: 40, b: 50}, x: [-8.8, 8.8], y: [0, 3.8], xlabel: "$n$", yt: [0, 1, 2, 3], layers: [{t: "stem", xs: ns, ys: xs, color: C.blue, r: 4}]},
-        {title: "Magnitude", w: 400, h: 290, m: {l: 46, r: 12, t: 40, b: 50}, x: [-1, 1], y: [0, 10], xt: piTicks, xlabel: "$\\omega/\\pi$", yt: [0, 5, 9], layers: [{t: "area", xs: ws, ys: mags, color: C.orange, line: true, op: 0.15}]},
-        {title: "Phase", w: 400, h: 290, m: {l: 46, r: 12, t: 40, b: 50}, x: [-1, 1], y: [-1.15, 1.15], xt: piTicks, yt: [-1, 0, 1], xlabel: "$\\omega/\\pi$", ylabel: "$\\angle X / \\pi$", layers: [{t: "dots", xs: pw, ys: phs, color: C.aqua, r: 2.6}]},
-      ],
-      cap: `$x[n-${d}] \\;\\longleftrightarrow\\; e^{-j${d}\\omega}\\,X(e^{j\\omega})$`,
-    };
-  },
-});
-
-// ---- convolution in time is multiplication in frequency
-demo("convthm", {
-  controls: [
-    {id: "M", label: "moving-average length $M$", min: 1, max: 16, step: 1, value: 4, fmt: (v) => `${v}`},
-    {id: "w2", label: "second sinusoid $\\omega_2/\\pi$", min: 0.3, max: 0.95, step: 0.01, value: 0.8, fmt: (v) => `$${num(v, 2)}\\pi$`},
-  ],
-  draw: ({M, w2}) => {
-    const w1 = 0.1, h = ints(1, M).map(() => 1 / M), ws = lin(0, 1, 240), ns = ints(0, 79);
-    const G = (q) => dtftAt(h, 0, q * PI), g1 = G(w1), g2 = G(w2);
-    const m1 = Math.hypot(...g1), m2 = Math.hypot(...g2), p1 = Math.atan2(g1[1], g1[0]), p2 = Math.atan2(g2[1], g2[0]);
-    const x = ns.map((n) => Math.sin(w1 * PI * n) + Math.sin(w2 * PI * n));
-    const y = ns.map((n) => m1 * Math.sin(w1 * PI * n + p1) + m2 * Math.sin(w2 * PI * n + p2));
-    const sp = (a, b) => ({xs: [w1, w2], ys: [a, b], color: C.blue, r: 5, w: 3});
-    const sm = (o) => Object.assign({w: 380, h: 290, m: {l: 46, r: 12, t: 40, b: 50}}, o);
-    return {
-      row: true,
-      figs: [
-        sm({title: "Input spectrum $|X|$ and filter $|H|$", x: [0, 1], y: [0, 1.2], xt: [0, 0.5, 1], yt: [0, 0.5, 1], xlabel: "$\\omega/\\pi$", legend: [["$|X|$", C.blue, "stem"], ["$|H|$", C.orange, "line"]],
-          layers: [{t: "line", xs: ws, ys: ws.map((q) => Math.hypot(...G(q))), color: C.orange, w: 3}, {t: "stem", ...sp(1, 1)}]}),
-        sm({title: "Output spectrum $|Y|$", x: [0, 1], y: [0, 1.2], xt: [0, 0.5, 1], yt: [0, 0.5, 1], xlabel: "$\\omega/\\pi$", layers: [{t: "stem", ...sp(m1, m2)}]}),
-        sm({title: "Input and output in time", x: [0, 79], y: [-2.3, 2.3], xt: [0, 20, 40, 60, 80], yt: [-2, 0, 2], xlabel: "$n$", legend: [["input", C.soft, "line"], ["output", C.blue, "line"]],
-          layers: [{t: "line", xs: ns, ys: x, color: C.soft, w: 1.8}, {t: "line", xs: ns, ys: y, color: C.blue, w: 2.8}]}),
-      ],
-      cap: `$Y(e^{j\\omega}) = H(e^{j\\omega})\\,X(e^{j\\omega})$`,
-    };
-  },
-});
-
-// ---- the DFT samples the DTFT
-const XSAMP = [1, 2, 3, 4, 4, 3, 2, 1];
-demo("dftsamp", {
-  controls: [{id: "N", type: "seg", value: 8, options: [[8, "$N=8$"], [16, "$N=16$"], [32, "$N=32$"], [64, "$N=64$"]]}],
-  draw: ({N}) => {
-    const rec = XSAMP.concat(Array(N - 8).fill(0)), F = magsOf(dftOf(rec, N)), ws = lin(0, 2, 400);
-    const curve = ws.map((q) => Math.hypot(...dtftAt(XSAMP, 0, q * PI)));
-    const ks = ints(0, N - 1);
-    return {
-      row: true,
-      figs: [
-        {title: "Samples (padded with zeros to $N$)", flex: 1, w: 420, h: 300, m: {l: 46, r: 12, t: 40, b: 50}, x: [-1, N], y: [0, 4.8], xlabel: "$n$", yt: [0, 2, 4], layers: [{t: "stem", xs: ints(0, N - 1), ys: rec, color: C.blue, r: N > 32 ? 2.6 : 4, w: 1.6}]},
-        {title: "DTFT and its samples $X[k]$", flex: 1.2, w: 500, h: 300, m: {l: 46, r: 12, t: 40, b: 50}, x: [0, 2], y: [0, 22], xt: [0, 0.5, 1, 1.5, 2], yt: [0, 10, 20], xlabel: "$\\omega/\\pi$",
-          legend: [["DTFT $X(e^{j\\omega})$", C.soft, "line"], ["DFT $X[k]$", C.orange, "dot"]],
-          layers: [{t: "line", xs: ws, ys: curve, color: C.soft, w: 3}, {t: "dots", xs: ks.map((k) => 2 * k / N), ys: ks.map((k) => F[k]), color: C.orange, r: N > 32 ? 3 : 5.5}]},
-      ],
-      cap: `$\\omega_k = 2\\pi k/${N}$`,
-    };
-  },
-});
-
-// ---- bins, resolution, Nyquist, aliasing
-const aliasOfHz = (f, fs) => Math.abs(f - Math.round(f / fs) * fs);
-demo("bins", {
-  controls: [
-    {id: "fs", type: "seg", value: 200, options: [[100, "$f_s=100$"], [200, "$f_s=200$"], [500, "$f_s=500$"], [1000, "$f_s=1000$"]]},
-    {id: "N", type: "seg", value: 64, options: [[32, "$N=32$"], [64, "$N=64$"], [128, "$N=128$"], [256, "$N=256$"]]},
-    {id: "f0", label: "frequency (Hz)", min: 1, max: 480, step: 1, value: 20, fmt: (v) => `${v}`},
-    {id: "view", type: "seg", value: "one", options: [["one", "One-sided"], ["two", "Two-sided"]]},
-  ],
-  draw: ({fs, N, f0, view = "one"}) => {
-    const x = ints(0, N - 1).map((n) => Math.cos(TAU * f0 * n / fs)), M = magsOf(dftOf(x, N)), df = fs / N;
-    const one = view === "one", ks = one ? ints(0, N / 2) : ints(-N / 2, N / 2 - 1);
-    const amp = ks.map((k) => (one ? 2 : 1) * M[(k + N) % N] / N);
-    const fa = aliasOfHz(f0, fs), unit = one ? "one-sided amplitude" : "$|X[k]|/N$";
-    return {
-      figs: [{title: "", w: 900, h: 215, m: {l: 66, r: 22, t: 12, b: 54}, x: [(one ? 0 : -fs / 2) - df / 2, fs / 2 + df / 2], y: [0, one ? 1.15 : 0.6], xlabel: "frequency (Hz)", ylabel: unit,
-        layers: [{t: "stem", xs: ks.map((k) => k * df), ys: amp, color: C.blue, r: N > 128 ? 2.6 : 4, w: N > 128 ? 1.4 : 2, skip: 0.004}]}],
-      cap: `$\\Delta f = f_s/N = ${num(df, 2)}$ Hz` +
-        (f0 > fs / 2 ? `<br><b class="warn">alias: $|${f0} - ${Math.round(f0 / fs) * fs}| = ${num(fa, 1)}$ Hz</b>` : ""),
-    };
-  },
-});
-
-// ---- magnitude and phase of the DFT
-demo("phase", {
-  controls: [
-    {id: "ph", label: "phase of the 3-cycle sinusoid $\\varphi/\\pi$", min: -1, max: 1, step: 0.05, value: 0.5, fmt: (v) => `$${num(v, 2)}\\pi$`},
-    {id: "b", label: "amplitude of the 5-cycle sinusoid", min: 0, max: 1, step: 0.05, value: 0.5, fmt: (v) => num(v, 2)},
-  ],
-  draw: ({ph, b}) => {
-    const N = 16, x = ints(0, N - 1).map((n) => Math.cos(TAU * 3 * n / N + ph * PI) + b * Math.cos(TAU * 5 * n / N));
-    const F = dftOf(x, N), ks = ints(0, N - 1), M = magsOf(F).map((v) => v / N);
-    const on = ks.filter((k) => M[k] > 0.02);
-    const sm = (o) => Object.assign({w: 400, h: 290, m: {l: 46, r: 12, t: 40, b: 50}}, o);
-    return {
-      row: true,
-      figs: [
-        sm({title: "$x[n] = \\cos(2\\pi\\,3n/16 + \\varphi) + b\\cos(2\\pi\\,5n/16)$", x: [-0.6, 15.6], y: [-2.6, 2.6], xlabel: "$n$", yt: [-2, 0, 2], layers: [{t: "stem", xs: ints(0, N - 1), ys: x, color: C.blue, r: 3.6}]}),
-        sm({title: "Magnitude $|X[k]|/N$", x: [-0.6, 15.6], y: [0, 0.6], xlabel: "$k$", yt: [0, 0.25, 0.5], layers: [{t: "stem", xs: ks, ys: M, color: C.blue, r: 3.6, skip: 0.004}]}),
-        sm({title: "Phase $\\angle X[k]/\\pi$", x: [-0.6, 15.6], y: [-1.15, 1.15], xlabel: "$k$", yt: [-1, 0, 1], layers: [{t: "stem", xs: on, ys: on.map((k) => Math.atan2(F.im[k], F.re[k]) / PI), color: C.orange, r: 3.6}]}),
-      ],
-      cap: `$\\angle X[3] = ${num(wrapPi(ph * PI) / PI, 2)}\\pi$`,
-    };
-  },
-});
-
-// ---- resolution: when do two peaks separate?
-demo("resolve", {
-  controls: [
-    {id: "N", type: "seg", value: 32, options: [[16, "$N=16$"], [32, "$N=32$"], [64, "$N=64$"], [128, "$N=128$"], [256, "$N=256$"]]},
-    {id: "d", label: "gap between the two frequencies (Hz)", min: 1, max: 12, step: 0.5, value: 6, fmt: (v) => num(v, 1)},
-  ],
-  draw: ({N, d}) => {
-    const fs = 100, f1 = 20, f2 = 20 + d;
-    const x = ints(0, N - 1).map((n) => Math.cos(TAU * f1 * n / fs) + Math.cos(TAU * f2 * n / fs));
-    const P = 2048, M = magsOf(dftOf(x, P)).map((v) => (2 * v) / N), M0 = magsOf(dftOf(x, N)).map((v) => (2 * v) / N);
-    const fk = ints(0, P / 2).map((k) => k * fs / P), bk = ints(0, N / 2).map((k) => k * fs / N);
-    const df = fs / N, sep = d >= df;
-    return {
-      row: true,
-      figs: [
-        {title: "The $N$ samples", flex: 1, w: 380, h: 300, m: {l: 46, r: 12, t: 40, b: 50}, x: [0, N - 1], y: [-2.5, 2.5], xlabel: "$n$", yt: [-2, 0, 2],
-          layers: [{t: "line", xs: ints(0, N - 1), ys: x, color: C.blue, w: 2.2}]},
-        {title: "Spectrum", flex: 1.7, w: 620, h: 300, m: {l: 46, r: 12, t: 40, b: 50}, x: [5, 45], y: [0, 2.2], xt: [10, 20, 30, 40], yt: [0, 1, 2], xlabel: "frequency (Hz)",
-          legend: [["DTFT of the $N$ samples", C.soft, "line"], ["DFT bins", C.orange, "dot"], ["true frequencies", C.blue, "dash"]],
-          layers: [{t: "vline", x: f1, color: C.blue, w: 1.5}, {t: "vline", x: f2, color: C.blue, w: 1.5},
-            {t: "line", xs: fk, ys: M, color: C.soft, w: 3}, {t: "dots", xs: bk, ys: M0, color: C.orange, r: 4.4}]},
-      ],
-      cap: `$\\Delta f = f_s/N = ${num(df, 2)}$ Hz, gap $= ${num(d, 1)}$ Hz` + (sep ? "" : ` <b class="warn">(merged)</b>`),
-    };
-  },
-});
-
-// ---- zero-padding interpolates, it does not resolve
-demo("zeropad", {
-  controls: [
-    {id: "N", type: "seg", value: 16, options: [[16, "$N=16$ samples"], [32, "$N=32$ samples"], [64, "$N=64$ samples"]]},
-    {id: "z", type: "seg", value: 1, options: [[1, "no padding"], [2, "pad $\\times 2$"], [4, "pad $\\times 4$"], [16, "pad $\\times 16$"]]},
-  ],
-  draw: ({N, z}) => {
-    const fs = 100, x = ints(0, N - 1).map((n) => Math.cos(TAU * 20 * n / fs) + Math.cos(TAU * 25 * n / fs));
-    const P = 2048, M = magsOf(dftOf(x, P)).map((v) => (2 * v) / N), L = N * z, ML = magsOf(dftOf(x, L)).map((v) => (2 * v) / N);
-    const fk = ints(0, P / 2).map((k) => k * fs / P), bk = ints(0, L / 2).map((k) => k * fs / L);
-    return {
-      figs: [{title: "", w: 900, h: 290, m: {l: 66, r: 22, t: 40, b: 54}, x: [5, 45], y: [0, 2.2], xt: [10, 20, 30, 40], yt: [0, 1, 2], xlabel: "frequency (Hz)", ylabel: "amplitude",
-        legend: [["DTFT of the $N$ samples", C.soft, "line"], ["DFT with zero-padding", C.orange, "dot"], ["true frequencies, 5 Hz apart", C.blue, "dash"]],
-        layers: [{t: "vline", x: 20, color: C.blue, w: 1.5}, {t: "vline", x: 25, color: C.blue, w: 1.5},
-          {t: "line", xs: fk, ys: M, color: C.soft, w: 3}, {t: "dots", xs: bk, ys: ML, color: C.orange, r: L > 128 ? 2.8 : 4.6}]}],
-      cap: `bin spacing $f_s/(zN) = ${num(fs / L, 2)}$ Hz, resolution $f_s/N = ${num(fs / N, 2)}$ Hz`,
-    };
-  },
-});
-
-// ---- cost of the DFT against the FFT
-demo("fftcost", {
-  controls: [{id: "p", label: "number of samples $N = 2^p$", min: 4, max: 20, step: 1, value: 12, fmt: (v) => `$2^{${v}}$`}],
-  draw: ({p}) => {
-    const ps = ints(4, 20), N = Math.pow(2, p), slow = N * N, fast = N * p;
-    const eng = (v) => (v >= 1e9 ? `${num(v / 1e9, 1)} billion` : v >= 1e6 ? `${num(v / 1e6, 1)} million` : v >= 1e3 ? `${num(v / 1e3, 1)} thousand` : `${v}`);
-    return {
-      figs: [{title: "", w: 900, h: 290, m: {l: 66, r: 22, t: 40, b: 54}, x: [3.5, 20.5], y: [0, 13], xt: [4, 8, 12, 16, 20], yt: [0, 3, 6, 9, 12], xlabel: "$p$, where $N = 2^p$", ylabel: "$\\log_{10}$(operations)",
-        legend: [["DFT: $N^2$", C.orange, "line"], ["FFT: $N\\log_2 N$", C.blue, "line"]],
-        layers: [{t: "line", xs: ps, ys: ps.map((q) => Math.log10(Math.pow(4, q))), color: C.orange, w: 3.2},
-          {t: "line", xs: ps, ys: ps.map((q) => Math.log10(Math.pow(2, q) * q)), color: C.blue, w: 3.2},
-          {t: "vline", x: p, color: C.soft}, {t: "dots", xs: [p, p], ys: [Math.log10(slow), Math.log10(fast)], color: C.ink, r: 6}]}],
-      cap: `$N^2 =$ ${eng(slow)}, $N\\log_2 N =$ ${eng(fast)}, ratio ${num(slow / fast, 0)}`,
-    };
-  },
-});
-
-// ---- the DFT assumes the N samples repeat
-demo("dftper", {
-  controls: [{id: "f", label: "cycles in the $N$ samples", min: 3, max: 4, step: 0.05, value: 3.5, fmt: (v) => num(v, 2)}],
-  draw: ({f}) => {
-    const N = 32, ns = ints(-4 * N, 8 * N - 1).map((i) => i / 4), v = ns.map((n) => Math.cos(TAU * f * (((n % N) + N) % N) / N));
-    const mid = ns.filter((n) => n >= 0 && n <= N);
-    const whole = Math.abs(f - Math.round(f)) < 1e-9;
-    return {
-      figs: [{title: "", w: 900, h: 310, m: {l: 52, r: 22, t: 16, b: 54}, x: [-N, 2 * N], y: [-1.3, 1.3], xt: [-32, 0, 32, 64], yt: [-1, 0, 1], xlabel: "$n$",
-        layers: [{t: "band", x0: 0, x1: N, color: C.blue, op: 0.07}, {t: "line", xs: ns, ys: v, color: C.soft, w: 2.4},
-          {t: "line", xs: mid, ys: mid.map((n) => v[Math.round(n * 4) + 4 * N]), color: C.blue, w: 3.2},
-          {t: "vline", x: 0, color: C.orange, w: 1.6, dash: "5 5"}, {t: "vline", x: N, color: C.orange, w: 1.6, dash: "5 5"}]}],
-      cap: `${num(f, 2)} cycles`,
-    };
-  },
-});
-
-// ---- leakage and windows
-const LEAKN = 64;
+// ---- leakage, and the Hann window against it: x[n] = cos(2pi f0 n/fs), fs = 100 Hz, N = 100, so the
+// bins sit on whole hertz. Left: the last samples and the start of the repeat the DFT assumes. Right: the
+// DTFT (line) and the DFT in dB, 0 dB being the peak of a sinusoid on a bin (the window's gain divided out).
+const LEAKFLOOR = -100;
 demo("leak", {
   controls: [
-    {id: "f", label: "cycles in the $N$ samples", min: 8, max: 9, step: 0.05, value: 8.5, fmt: (v) => num(v, 2)},
-    {id: "win", type: "seg", value: "rect", options: winOptions},
+    {id: "f", label: "frequency $f_0$ (Hz)", min: 10, max: 12, step: 0.05, value: 10, fmt: (v) => num(v, 2)},
+    {id: "win", type: "seg", value: "rect", options: [["rect", "Rectangular"], ["hann", "Hann"]]},
   ],
-  draw: ({f, win}) => {
-    const N = LEAKN, w = winOf(win, N), x = ints(0, N - 1).map((n) => Math.cos(TAU * f * n / N) * w[n]);
-    const cg = w.reduce((s, a) => s + a, 0) / 2, P = 1024;
-    const tf = ints(0, 4 * N - 4).map((i) => i / 4), wf = tf.map((n) => WINS[win][1](n, N)), xf = tf.map((n, i) => Math.cos(TAU * f * n / N) * wf[i]);
-    const Mc = magsOf(dftOf(x, P)).map((v) => dB(v / cg)), Mk = magsOf(dftOf(x, N)).map((v) => dB(v / cg));
-    const ks = ints(0, N / 2), far = ks.filter((k) => Math.abs(k - f) > 5).map((k) => Mk[k]), worst = far.length ? Math.max(...far) : -120;
+  draw: ({f, win = "rect"}, cfg) => {
+    const fs = 100, N = 100, w = winOf(win, N), x = ints(0, N - 1).map((n) => Math.cos(TAU * f * n / fs) * w[n]), h = cfg.h || 190;
+    const ref = w.reduce((s, a) => s + a, 0) / 2;
+    const db = (q) => Math.max(LEAKFLOOR, dB(Math.hypot(...dtftAt(x, 0, TAU * q / fs)) / ref));
+    const fr = lin(0, 50, 1001), ks = ints(0, 50).filter((k) => db(k) > LEAKFLOOR + 0.5);
+    const ns = ints(80, 119), end = ns.filter((n) => n < N), rep = ns.filter((n) => n >= N);
+    const on = Math.abs(f - Math.round(f)) < 1e-6;
     return {
       row: true,
       figs: [
-        {title: "Windowed samples", flex: 1, w: 420, h: 310, m: {l: 46, r: 12, t: 40, b: 50}, x: [0, N], y: [-1.25, 1.25], xlabel: "$n$", yt: [-1, 0, 1], layers: [{t: "line", xs: tf, ys: xf, color: C.blue, w: 2.4}, {t: "line", xs: tf, ys: wf, color: C.soft, w: 1.6, dash: "5 5"}, {t: "line", xs: tf, ys: wf.map((a) => -a), color: C.soft, w: 1.6, dash: "5 5"}]},
-        {title: "Spectrum in dB", flex: 1.4, w: 580, h: 310, m: {l: 52, r: 12, t: 40, b: 50}, x: [0, N / 2], y: [-110, 5], xt: [0, 8, 16, 24, 32], yt: [-100, -75, -50, -25, 0], xlabel: "bin $k$", ylabel: "dB",
-          legend: [["DTFT of the $N$ samples", C.soft, "line"], ["DFT bins", C.blue, "stem"]],
-          layers: [{t: "line", xs: ints(0, P / 2).map((k) => k * N / P), ys: Mc.slice(0, P / 2 + 1), color: C.soft, w: 2.4},
-            {t: "stem", xs: ks, ys: ks.map((k) => Math.max(-110, Mk[k])), color: C.blue, r: 3.2, w: 1.8, base: -110}]},
+        {flex: 1, w: 400, h, m: {l: 46, r: 14, t: 16, b: 54}, x: [79, 120], y: [-1.3, 1.75], xt: [80, 90, 100, 110, 120], yt: [-1, 0, 1], xlabel: "$n$", vgrid: false,
+          layers: [{t: "vline", x: 99.5, color: C.axis, w: 1.6},
+            {t: "line", xs: ns, ys: ns.map((n) => x[n % N]), color: C.soft, w: 1.6},
+            {t: "dots", xs: end, ys: end.map((n) => x[n]), color: C.blue, r: 3.4},
+            {t: "dots", xs: rep, ys: rep.map((n) => x[n - N]), color: C.mute, r: 3.4},
+            {t: "text", x: 98.5, y: 1.5, s: "end of $x[n]$", anchor: "end", w: 160},
+            {t: "text", x: 100.5, y: 1.5, s: "start, repeated", anchor: "start"}]},
+        {flex: 1.45, w: 560, h, m: {l: 62, r: 14, t: 40, b: 54}, x: [-0.5, 50.5], y: [LEAKFLOOR, 6], xt: [0, 10, 20, 30, 40, 50], yt: [0, -25, -50, -75, -100], xlabel: "frequency (Hz)", ylabel: "dB",
+          legend: [["$|X(e^{j\\omega})|$", C.blue, "line"], ["$|X[k]|$", C.orange, "stem"]],
+          layers: [{t: "line", xs: fr, ys: fr.map(db), color: C.blue, w: 1.4, op: 0.6},
+            {t: "stem", xs: ks, ys: ks.map(db), color: C.orange, r: 3, w: 1.8, base: LEAKFLOOR}]},
       ],
-      cap: `${WINS[win][0]} window, ${num(f, 2)} cycles: far from the peak the leakage sits at ${num(worst, 0)} dB`,
+      cap: on ? `$f_0 = ${num(f, 0)}$ Hz: on bin $${num(f, 0)}$` : `$f_0 = ${num(f, 2)}$ Hz: between bins $${Math.floor(f)}$ and $${Math.floor(f) + 1}$`,
     };
   },
 });
-
-// ---- what a window looks like in both domains
-const WTABLE = {rect: [1, -13], hann: [2, -31], hamming: [2, -43], blackman: [3, -58]};
-demo("winshape", {
-  controls: [{id: "win", type: "seg", value: "rect", options: winOptions}],
-  draw: ({win}) => {
-    const N = 64, w = winOf(win, N), P = 4096, M = magsOf(dftOf(w, P)), m0 = M[0];
-    const kk = ints(0, 16 * (P / N)).map((i) => i * N / P), db = kk.map((_, i) => Math.max(-100, dB(M[i] / m0)));
-    return {
-      row: true,
-      figs: [
-        {title: "Window $w[n]$", flex: 1, w: 420, h: 300, m: {l: 46, r: 12, t: 40, b: 50}, x: [0, N], y: [0, 1.15], xlabel: "$n$", yt: [0, 0.5, 1], layers: [{t: "area", xs: ints(0, N - 1), ys: w, color: C.blue, line: true, op: 0.15}]},
-        {title: "Its spectrum $|W|$ in dB", flex: 1.4, w: 580, h: 300, m: {l: 52, r: 12, t: 40, b: 50}, x: [0, 16], y: [-105, 5], xt: [0, 4, 8, 12, 16], yt: [-100, -75, -50, -25, 0], xlabel: "bins away from the peak", ylabel: "dB",
-          layers: [{t: "line", xs: kk, ys: db, color: C.orange, w: 2.8}]},
-      ],
-      cap: `${WINS[win][0]}: main lobe reaches ±${WTABLE[win][0]} bin${WTABLE[win][0] > 1 ? "s" : ""}, highest side lobe ${WTABLE[win][1]} dB`,
-    };
-  },
-});
-
-// ---- one DFT of a long signal cannot say when
-const TFS = 4000, TN = 4096;
-demo("whenfreq", {
-  controls: [{id: "mode", type: "seg", value: "row", options: [["row", "One after another"], ["together", "All at once"]]}],
-  draw: ({mode}) => {
-    const F = [60, 160, 320], ts = ints(0, TN - 1).map((n) => n / TFS);
-    const x = ints(0, TN - 1).map((n) => mode === "row"
-      ? Math.sin(TAU * F[Math.min(2, Math.floor(3 * n / TN))] * n / TFS)
-      : F.reduce((s, f) => s + Math.sin(TAU * f * n / TFS), 0) / 3);
-    const M = magsOf(dftOf(x, TN)), ks = ints(0, 512);
-    return {
-      figs: [
-        {title: "Signal", w: 900, h: 150, m: {l: 66, r: 22, t: 30, b: 36}, x: [0, TN / TFS], y: [-1.2, 1.2], yt: [-1, 0, 1], xt: [0, 0.25, 0.5, 0.75, 1], ylabel: "$x(t)$", layers: [{t: "line", xs: ts, ys: x, color: C.blue, w: 1.4}]},
-        {title: "Magnitude of one DFT of all the samples", w: 900, h: 220, m: {l: 66, r: 22, t: 30, b: 54}, x: [0, 500], y: [0, 0.5], yt: [0, 0.25, 0.5], xlabel: "frequency (Hz)", ylabel: "$|X[k]|/N$",
-          layers: [{t: "area", xs: ks.map((k) => k * TFS / TN), ys: ks.map((k) => 2 * M[k] / TN), color: C.orange, line: true, op: 0.15}]},
-      ],
-      cap: "Same three peaks at 60, 160 and 320 Hz in both cases",
-    };
-  },
-});
-
-// ---- spectrogram
-const SIGS = {
-  chirp: ["Rising frequency", () => { let ph = 0; return ints(0, TN - 1).map((n) => { ph += TAU * (20 + 380 * n / TN) / TFS; return Math.sin(ph); }); }],
-  steps: ["Three frequencies in a row", () => ints(0, TN - 1).map((n) => Math.sin(TAU * [60, 160, 320][Math.min(2, Math.floor(3 * n / TN))] * n / TFS))],
-};
-const SIGC = {};
-demo("stft", {
-  controls: [
-    {id: "s", type: "seg", value: "chirp", options: Object.entries(SIGS).map(([k, v]) => [k, v[0]])},
-    {id: "L", label: "window length $L$ (samples)", type: "seg", value: 256, options: [[64, "64"], [128, "128"], [256, "256"], [512, "512"], [1024, "1024"]]},
-  ],
-  draw: ({s, L}) => {
-    const x = SIGC[s] || (SIGC[s] = SIGS[s][1]()), hop = L / 4, w = winOf("hann", L), frames = Math.floor((TN - L) / hop) + 1, nb = Math.floor(500 * L / TFS) + 1;
-    const cv = document.createElement("canvas"); cv.width = frames; cv.height = nb;
-    const ctx = cv.getContext("2d"), img = ctx.createImageData(frames, nb);
-    const Z = [];
-    for (let t = 0; t < frames; t++) {
-      const seg = x.slice(t * hop, t * hop + L).map((v, i) => v * w[i]), M = magsOf(dftOf(seg, L));
-      Z.push(M.slice(0, nb).map((v) => dB(v / L)));
-    }
-    const top = Math.max(...Z.flat()), floor = top - 50;
-    for (let t = 0; t < frames; t++) for (let b = 0; b < nb; b++) {
-      const [r, g, bl] = ramp((Z[t][b] - floor) / 50), o = ((nb - 1 - b) * frames + t) * 4;
-      img.data[o] = r; img.data[o + 1] = g; img.data[o + 2] = bl; img.data[o + 3] = 255;
-    }
-    ctx.putImageData(img, 0, 0);
-    const T = TN / TFS, ts = ints(0, TN - 1).map((n) => n / TFS), c0 = 0.45 * T, wl = L / TFS;
-    return {
-      n: 1.3,
-      figs: [
-        {title: "", w: 900, h: 100, m: {l: 66, r: 22, t: 10, b: 30}, x: [0, T], y: [-1.2, 1.2], yt: [-1, 0, 1], xt: [0, 0.25, 0.5, 0.75, 1], ylabel: "$x(t)$",
-          layers: [{t: "band", x0: c0, x1: c0 + wl, color: C.orange, op: 0.3}, {t: "line", xs: ts, ys: x, color: C.blue, w: 1.4}]},
-        {title: "", w: 900, h: 200, m: {l: 66, r: 22, t: 10, b: 50}, x: [0, T], y: [0, 500], yt: [0, 100, 200, 300, 400, 500], xt: [0, 0.25, 0.5, 0.75, 1], xlabel: "time (s)", ylabel: "frequency (Hz)",
-          layers: [{t: "heat", url: cv.toDataURL(), x0: (L / 2) / TFS, x1: T - (L / 2) / TFS, y0: 0, y1: (nb - 1) * TFS / L}]},
-      ],
-      cap: `$L = ${L}$ samples = ${num(1000 * L / TFS, 0)} ms in time, ${num(TFS / L, 1)} Hz in frequency`,
-    };
-  },
-});
-
-// ---- why a log scale
-demo("db", {
-  controls: [{id: "sc", type: "seg", value: "lin", options: [["lin", "Linear amplitude"], ["db", "Decibels"]]}],
-  draw: ({sc}) => {
-    const A = [1, 0.3, 0.1, 0.03, 0.01, 0.003, 0.001], ks = ints(0, A.length - 1), lin = sc === "lin";
-    return {
-      figs: [{title: "", w: 600, h: 300, m: {l: 62, r: 22, t: 16, b: 54}, x: [-0.6, A.length - 0.4], y: lin ? [0, 1.1] : [-70, 5], yt: lin ? [0, 0.5, 1] : [-60, -40, -20, 0], xt: ks, xlabel: "spectral line", ylabel: lin ? "amplitude" : "dB",
-        layers: [{t: "stem", xs: ks, ys: lin ? A : A.map((a) => 20 * Math.log10(a)), color: C.blue, r: 4.5, w: 2.4, base: lin ? 0 : -70}]}],
-      cap: "$20\\log_{10}(A/A_0)$",
-    };
-  },
-});
-
-// ---- building a signal from sinusoids
-const SYNF = [1, 3, 5, 7];
-demo("synth", {
-  controls: SYNF.map((f, i) => ({id: "a" + i, label: `amplitude at ${f} Hz`, min: 0, max: 1, step: 0.05, value: [1, 0.35, 0.2, 0.15][i], fmt: (v) => num(v, 2)})),
-  draw: (v) => {
-    const A = SYNF.map((_, i) => v["a" + i]), t = ints(0, 800).map((i) => i / 400);
-    const comp = SYNF.map((f, i) => t.map((u) => A[i] * Math.sin(TAU * f * u)));
-    const sum = t.map((_, j) => comp.reduce((s, c) => s + c[j], 0));
-    return {
-      row: true,
-      figs: [
-        {title: "Sum of the sinusoids", flex: 1.9, w: 612, h: 300, m: {l: 46, r: 12, t: 40, b: 50}, x: [0, 2], y: [-2.2, 2.2], yt: [-2, -1, 0, 1, 2], xlabel: "time (s)",
-          layers: comp.map((c) => ({t: "line", xs: t, ys: c, color: C.soft, w: 1.4})).concat([{t: "line", xs: t, ys: sum, color: C.blue, w: 3}])},
-        {title: "Spectrum", flex: 1, w: 321, h: 300, m: {l: 46, r: 12, t: 40, b: 50}, x: [0, 8], y: [0, 1.1], xt: [1, 3, 5, 7], yt: [0, 0.5, 1], xlabel: "frequency (Hz)", ylabel: "amplitude",
-          layers: [{t: "stem", xs: SYNF, ys: A, color: C.orange, r: 4.5, w: 2.4}]},
-      ],
-      cap: "$x(t) = \\sum_k a_k \\sin(2\\pi f_k t)$",
-    };
-  },
-});
-
 
 /* ====================== Lecture 2: the Z transform ====================== */
 const zm = {l: 58, r: 20, t: 40, b: 50};
 const zcircle = () => { const t = lin(0, TAU, 181); return {t: "line", xs: t.map((a) => Math.cos(a)), ys: t.map((a) => Math.sin(a)), color: C.soft, w: 1.8, dash: "6 5"}; };
 const zcross = (x, y, d = 0.07) => [{t: "line", xs: [x - d, x + d], ys: [y - d, y + d], color: C.orange, w: 3}, {t: "line", xs: [x - d, x + d], ys: [y + d, y - d], color: C.orange, w: 3}];
-const zplane = (poles, zeros, extra = {}) => Object.assign({title: "$z$-plane", flex: 1, w: 321, h: 300, m: zm, x: [-1.5, 1.5], y: [-1.18, 1.18], xt: [-1, 0, 1], yt: [-1, 0, 1], xlabel: "Re", ylabel: "Im",
+const zplane0 = (poles, zeros, extra = {}) => Object.assign({title: "$z$-plane", flex: 1, w: 321, h: 300, m: zm, x: [-1.5, 1.5], y: [-1.18, 1.18], xt: [-1, 0, 1], yt: [-1, 0, 1], xlabel: "Re", ylabel: "Im",
   layers: [zcircle(), {t: "hline", y: 0, color: C.soft, w: 1}, {t: "vline", x: 0, color: C.soft, w: 1}]
     .concat(...poles.map((p) => zcross(p[0], p[1])))
     .concat(zeros.length ? [{t: "dots", xs: zeros.map((z) => z[0]), ys: zeros.map((z) => z[1]), color: C.blue, hollow: true, r: 6}] : [])}, extra);
+// the unit circle must look round: width follows height
+const zplane = (poles, zeros, extra = {}) => { const o = zplane0(poles, zeros, extra); o.w = Math.round((o.h - o.m.t - o.m.b) * 3 / 2.36 + o.m.l + o.m.r); return o; };
 // run a difference equation on a unit sample: y[n] = sum b_k x[n-k] - sum_{k>=1} a_k y[n-k]
 const impulseOf = (b, a, N) => { const y = []; for (let n = 0; n < N; n++) { let v = n < b.length ? b[n] : 0; for (let k = 1; k < a.length; k++) if (n - k >= 0) v -= a[k] * y[n - k]; y.push(v / a[0]); } return y; };
 
@@ -1867,6 +1578,363 @@ demo("pz", {
 });
 
 
+/* ====================== Lecture 3: frequency response ====================== */
+// H(e^{jw}) for H(z) = B(z)/A(z), coefficients in powers of z^{-1}
+const hresp = (b, a, w) => {
+  const ev = (c) => { let re = 0, im = 0; c.forEach((v, k) => { re += v * Math.cos(w * k); im -= v * Math.sin(w * k); }); return [re, im]; };
+  const [nr, ni] = ev(b), [dr, di] = ev(a), d = dr * dr + di * di;
+  return [(nr * dr + ni * di) / d, (ni * dr - nr * di) / d];
+};
+const FRS = {
+  ma2: {name: "2-point MA", b: [0.5, 0.5], a: [1], poles: [[0, 0]], zeros: [[-1, 0]], eq: "y[n] = \\dfrac{x[n] + x[n-1]}{2}", H: "\\dfrac{1 + z^{-1}}{2}"},
+  ma3: {name: "3-point MA", b: [1 / 3, 1 / 3, 1 / 3], a: [1], poles: [[0, 0], [0, 0]], zeros: [[-0.5, 0.866], [-0.5, -0.866]], eq: "y[n] = \\dfrac{x[n] + x[n-1] + x[n-2]}{3}", H: "\\dfrac{1 + z^{-1} + z^{-2}}{3}"},
+  iir1: {name: "1st-order IIR", b: [0.2], a: [1, -0.8], poles: [[0.8, 0]], zeros: [[0, 0]], eq: "y[n] = 0.8\\,y[n-1] + 0.2\\,x[n]", H: "\\dfrac{0.2}{1 - 0.8 z^{-1}}"},
+  diff: {name: "First difference", b: [1, -1], a: [1], poles: [[0, 0]], zeros: [[1, 0]], eq: "y[n] = x[n] - x[n-1]", H: "1 - z^{-1}"},
+  res: {name: "2nd-order IIR", b: [0.1], a: [1, -1.2728, 0.81], poles: [[0.6364, 0.6364], [0.6364, -0.6364]], zeros: [[0, 0], [0, 0]], eq: "y[n] = 0.1\\,x[n] + 1.27\\,y[n-1] - 0.81\\,y[n-2]", H: "\\dfrac{0.1}{1 - 1.27 z^{-1} + 0.81 z^{-2}}"},
+};
+const blocks = (items) => `<div class="sp-blocks">${items.map(([h, b]) => `<div class="sp-blk"><div class="h">${h}</div><div>${b}</div></div>`).join("")}</div>`;
+const frOptions = Object.entries(FRS).map(([k, v]) => [k, v.name]);
+const frSm = (o) => Object.assign({w: 400, h: 255, m: {l: 46, r: 12, t: 40, b: 50}}, o);
+const FTYPES = {
+  lp: {name: "Lowpass", b: [1 / 3, 1 / 3, 1 / 3], a: [1], poles: [[0, 0], [0, 0]], zeros: [[-0.5, 0.866], [-0.5, -0.866]],
+    H: "\\dfrac{1 + z^{-1} + z^{-2}}{3}", Hw: "\\dfrac{1 + e^{-j\\omega} + e^{-j2\\omega}}{3}"},
+  hp: {name: "Highpass", b: [0.5, -0.5], a: [1], poles: [[0, 0]], zeros: [[1, 0]],
+    H: "\\dfrac{1 - z^{-1}}{2}", Hw: "\\dfrac{1 - e^{-j\\omega}}{2}"},
+  bp: {name: "Bandpass", b: [0.1, 0, -0.1], a: [1, 0, 0.81], poles: [[0, 0.9], [0, -0.9]], zeros: [[1, 0], [-1, 0]],
+    H: "\\dfrac{0.1\\,(1 - z^{-2})}{1 + 0.81 z^{-2}}", Hw: "\\dfrac{0.1\\,(1 - e^{-j2\\omega})}{1 + 0.81 e^{-j2\\omega}}"},
+  bs: {name: "Bandstop", b: [0.9, 0, 0.9], a: [1, 0, 0.81], poles: [[0, 0.9], [0, -0.9]], zeros: [[0, 1], [0, -1]],
+    H: "\\dfrac{0.9\\,(1 + z^{-2})}{1 + 0.81 z^{-2}}", Hw: "\\dfrac{0.9\\,(1 + e^{-j2\\omega})}{1 + 0.81 e^{-j2\\omega}}"},
+};
+// z-plane, gain and phase of one system, with a marker at w (in units of pi)
+function frDraw(S, w, shade) {
+  const ws = lin(0, 1, 241), Hs = ws.map((q) => hresp(S.b, S.a, q * PI)), mag = Hs.map((h) => Math.hypot(h[0], h[1]));
+  const top = Math.max(1.1, ...mag) * 1.1, hw = hresp(S.b, S.a, w * PI), mw = Math.hypot(hw[0], hw[1]), pw = Math.atan2(hw[1], hw[0]);
+  const phIdx = ws.map((_, i) => i).filter((i) => mag[i] > 1e-3);
+  const ex = Math.cos(w * PI), ey = Math.sin(w * PI);
+  const zp = zplane(S.poles, S.zeros, {title: "$z$-plane", flex: 1, h: 255});
+  zp.layers.push({t: "line", xs: [0, ex], ys: [0, ey], color: C.blue, w: 2.2}, {t: "dots", xs: [ex], ys: [ey], color: C.blue, r: 6});
+  const bands = [];
+  if (shade) {
+    const lim = 0.7071 * Math.max(...mag); let s0 = null;
+    ws.forEach((q, i) => { const on = mag[i] >= lim; if (on && s0 === null) s0 = q; if ((!on || i === ws.length - 1) && s0 !== null) { bands.push({t: "band", x0: s0, x1: on ? q : ws[i - 1], color: C.blue, op: 0.12}); s0 = null; } });
+  }
+  return {
+    row: true,
+    figs: [
+      zp,
+      frSm({title: "Gain $|H(e^{j\\omega})|$", flex: 1, x: [0, 1], y: [0, top], xt: [0, 0.5, 1], xlabel: "$\\omega/\\pi$",
+        layers: bands.concat([{t: "line", xs: ws, ys: mag, color: C.blue, w: 3}, {t: "vline", x: w, color: C.soft, w: 1.6}, {t: "dots", xs: [w], ys: [mw], color: C.blue, r: 6}])}),
+      frSm({title: "Phase $\\angle H(e^{j\\omega})\\,/\\,\\pi$", flex: 1, x: [0, 1], y: [-1.1, 1.1], xt: [0, 0.5, 1], yt: [-1, 0, 1], xlabel: "$\\omega/\\pi$",
+        layers: [{t: "dots", xs: phIdx.map((i) => ws[i]), ys: phIdx.map((i) => Math.atan2(Hs[i][1], Hs[i][0]) / PI), color: C.aqua, r: 2}, {t: "vline", x: w, color: C.soft, w: 1.6},
+          ...(mw > 1e-3 ? [{t: "dots", xs: [w], ys: [pw / PI], color: C.aqua, r: 6}] : [])]}),
+    ],
+    at: `at $\\omega = ${num(w, 2)}\\pi$`,
+    vals: `$|H| = ${num(mw, 2)}$ &nbsp; $\\angle H = ${mw > 1e-3 ? num(pw / PI, 2) + "\\pi" : "\\text{undefined}"}$`,
+  };
+}
+
+// ---- the frequency response read off the unit circle
+demo("freqresp", {
+  controls: [
+    {id: "sys", type: "seg", value: "ma2", options: frOptions},
+    {id: "w", label: "frequency $\\omega/\\pi$", min: 0, max: 1, step: 0.01, value: 0.25, fmt: (v) => `$${num(v, 2)}\\pi$`},
+  ],
+  draw: (st, cfg) => { const sys = st.sys || (cfg.set || {}).sys || "ma2", w = st.w;
+    const S = FRS[sys], r = frDraw(S, w, false);
+    return {row: true, figs: r.figs, cap: blocks([["System", `$${S.eq}$`], ["Transfer function", `$H(z) = ${S.H}$`], ["Response " + r.at, r.vals]])};
+  },
+});
+
+// v in units of pi as LaTeX: 0, \pi, 0.25\pi
+const piTex = (v) => (v === 0 ? "0" : Math.abs(v - 1) < 5e-3 ? "\\pi" : `${num(v, 2)}\\pi`);
+// ---- a sinusoid through one system (cfg.sys, default the 3-point MA): the input and
+// output in time, beside the gain and phase curves with the input frequency marked
+demo("sinout", {
+  controls: [
+    {id: "w", label: "frequency $\\omega$", min: 0, max: 1, step: 0.01, value: 0.25, fmt: (v) => `$${piTex(v)}$`},
+  ],
+  draw: ({w}, cfg) => {
+    const S = FRS[cfg.sys || "ma3"], N = 30, ns = ints(0, N - 1), fine = lin(0, N - 1, 600);
+    const [hr, hi] = hresp(S.b, S.a, w * PI), g = Math.hypot(hr, hi), ph = g > 1e-3 ? Math.atan2(hi, hr) : 0;
+    const ws = lin(0, 1, 301), Hs = ws.map((q) => hresp(S.b, S.a, q * PI)), mag = Hs.map(([a, b]) => Math.hypot(a, b));
+    // phase in units of pi, one line per continuous run (breaks at zeros of the gain and at jumps)
+    const runs = [];
+    ws.forEach((q, i) => {
+      if (mag[i] < 1e-3) { runs.push([]); return; }
+      const p = Math.atan2(Hs[i][1], Hs[i][0]) / PI, run = runs[runs.length - 1];
+      if (!run || (run.length && Math.abs(p - run[run.length - 1][1]) > 0.5)) runs.push([[q, p]]); else run.push([q, p]);
+    });
+    const top = Math.max(1.15, g * 1.15), xs = fine.map((t) => w * PI * t);
+    const time = {w: 600, h: 390, m: {l: 50, r: 14, t: 40, b: 50}, x: [-0.6, N - 0.4], y: [-top, top], xlabel: "$n$", yt: [-1, 0, 1],
+      legend: [["input $x[n]$", C.mute, "dot"], ["output $y[n]$", C.blue, "stem"]],
+      layers: [
+        {t: "line", xs: fine, ys: xs.map(Math.cos), color: C.soft, w: 2},
+        {t: "line", xs: fine, ys: xs.map((v) => g * Math.cos(v + ph)), color: C.blue, w: 1.4, dash: "6 5", op: 0.6},
+        {t: "dots", xs: ns, ys: ns.map((n) => Math.cos(w * PI * n)), color: C.mute, r: 3.6},
+        {t: "stem", xs: ns, ys: ns.map((n) => g * Math.cos(w * PI * n + ph)), color: C.blue, r: 3.8, w: 2},
+      ]};
+    const small = (o) => Object.assign({w: 400, h: 200, m: {l: 66, r: 14, t: 10, b: 56}, x: [-0.03, 1.03], xt: [0, 0.25, 0.5, 0.75, 1], xlabel: "$\\omega/\\pi$"}, o);
+    const gain = small({y: [0, Math.max(1.1, ...mag) * 1.05], yt: [0, 0.5, 1], ylabel: "$|H|$",
+      layers: [{t: "line", xs: ws, ys: mag, color: C.blue, w: 2.6}, {t: "vline", x: w, color: C.soft, w: 1.6}, {t: "dots", xs: [w], ys: [g], color: C.orange, r: 6}]});
+    const phase = small({y: [-1.1, 1.1], yt: [-1, 0, 1], ylabel: "$\\angle H / \\pi$",
+      layers: [...runs.filter((r) => r.length > 1).map((r) => ({t: "line", xs: r.map((p) => p[0]), ys: r.map((p) => p[1]), color: C.aqua, w: 2.6})),
+        {t: "vline", x: w, color: C.soft, w: 1.6}, ...(g > 1e-3 ? [{t: "dots", xs: [w], ys: [ph / PI], color: C.orange, r: 6}] : [])]});
+    const pt = Math.abs(ph) < 5e-3 ? "" : ` ${ph < 0 ? "-" : "+"} ${piTex(Math.abs(ph / PI))}`;
+    const gt = Math.abs(g - 1) < 5e-3 ? "" : num(g, 2) + "\\,";
+    const y = g < 5e-3 ? "0" : w === 0 ? num(g, 2) : `${gt}\\cos(${piTex(w)}\\,n${pt})`;
+    return {
+      row: true,
+      html: `<div class="sp-plot" style="flex:3 1 0">${plot(time)}</div><div class="sp-plot" style="flex:2 1 0">${plot(gain)}${plot(phase)}</div>`,
+      cap: `$x[n] = ${w === 0 ? "1" : `\\cos(${piTex(w)}\\,n)`} \\;\\longrightarrow\\; y[n] = ${y}$`,
+    };
+  },
+});
+
+// ---- a notch for mains hum: zeros on the unit circle, poles just inside
+demo("notch", {
+  controls: [
+    {id: "f0", label: "notch frequency (Hz)", min: 20, max: 450, step: 5, value: 50, fmt: (v) => `${v}`},
+    {id: "r", label: "pole radius $r$", min: 0.5, max: 0.99, step: 0.01, value: 0.95, fmt: (v) => `$${num(v, 2)}$`},
+  ],
+  draw: ({f0, r}) => {
+    const fs = 1000, th = TAU * f0 / fs, c = Math.cos(th);
+    const b = [1, -2 * c, 1], a = [1, -2 * r * c, r * r];
+    const fk = lin(0, fs / 2, 301), dbv = fk.map((f) => Math.max(-60, 20 * Math.log10(Math.max(1e-6, Math.hypot(...hresp(b, a, TAU * f / fs))))));
+    const zp = zplane([[r * c, r * Math.sin(th)], [r * c, -r * Math.sin(th)]], [[c, Math.sin(th)], [c, -Math.sin(th)]], {title: "Poles (×) and zeros (○)", flex: 1, h: 300});
+    return {
+      row: true,
+      figs: [
+        zp,
+        {title: "Gain in decibels", flex: 1.9, w: 700, h: 300, m: {l: 56, r: 12, t: 40, b: 50}, x: [0, fs / 2], y: [-62, 4], yt: [-60, -40, -20, 0], xlabel: "frequency (Hz)",
+          layers: [{t: "line", xs: fk, ys: dbv, color: C.blue, w: 3}]},
+      ],
+      cap: `$f_s = 1000$ Hz &nbsp; zeros at $e^{\\pm j\\theta}$, $\\theta = 2\\pi f_0 / f_s = ${num(th / PI, 2)}\\pi$`,
+    };
+  },
+});
+
+
+// ---- example 1: the gain scales every tone by its own factor
+demo("gainex", {
+  controls: [
+    {id: "t", type: "seg", value: "lp", options: [["lp", "Lowpass"], ["hp", "Highpass"]]},
+    {id: "w2", label: "second tone $\\omega_2/\\pi$", min: 0.4, max: 0.95, step: 0.01, value: 0.8, fmt: (v) => `$${num(v, 2)}\\pi$`},
+  ],
+  draw: ({t, w2}) => {
+    const S = FTYPES[t], w1 = 0.1, ns = ints(0, 79), ws = lin(0, 1, 241);
+    const G = (q) => { const h = hresp(S.b, S.a, q * PI); return [Math.hypot(h[0], h[1]), Math.atan2(h[1], h[0])]; };
+    const [g1, p1] = G(w1), [g2, p2] = G(w2);
+    const x = ns.map((n) => Math.cos(w1 * PI * n) + Math.cos(w2 * PI * n));
+    const y = ns.map((n) => g1 * Math.cos(w1 * PI * n + p1) + g2 * Math.cos(w2 * PI * n + p2));
+    return {
+      row: true,
+      figs: [
+        frSm({title: "Gain $|H(e^{j\\omega})|$ and the two tones", flex: 1, x: [0, 1], y: [0, 1.15], xt: [0, 0.5, 1], yt: [0, 0.5, 1], xlabel: "$\\omega/\\pi$",
+          layers: [{t: "line", xs: ws, ys: ws.map((q) => G(q)[0]), color: C.blue, w: 3}, {t: "vline", x: w1, color: C.soft, w: 1.6}, {t: "vline", x: w2, color: C.soft, w: 1.6},
+            {t: "dots", xs: [w1, w2], ys: [g1, g2], color: C.orange, r: 6.5}]}),
+        frSm({title: "Input and output", flex: 1.5, w: 600, x: [0, 79], y: [-2.3, 2.3], xt: [0, 20, 40, 60, 80], yt: [-2, 0, 2], xlabel: "$n$",
+          legend: [["input", C.soft, "line"], ["output", C.blue, "line"]],
+          layers: [{t: "line", xs: ns, ys: x, color: C.soft, w: 1.8}, {t: "line", xs: ns, ys: y, color: C.blue, w: 2.8}]}),
+      ],
+      cap: blocks([["Low tone, $\\omega_1 = 0.1\\pi$", `gain $${num(g1, 2)}$`], ["Second tone, $\\omega_2 = " + num(w2, 2) + "\\pi$", `gain $${num(g2, 2)}$`]]),
+    };
+  },
+});
+
+// ---- example 2: a delay is a phase that falls linearly with frequency
+demo("delayex", {
+  controls: [{id: "d", label: "delay $n_0$ (samples)", min: 0, max: 10, step: 1, value: 4, fmt: (v) => `${v}`}],
+  draw: ({d}) => {
+    const ns = ints(0, 29), ws = lin(0, 1, 241), bump = (n) => Math.exp(-Math.pow((n - 6) / 2.2, 2));
+    const x = ns.map(bump), y = ns.map((n) => bump(n - d));
+    return {
+      row: true,
+      figs: [
+        frSm({title: "Input and output", flex: 1.4, w: 560, x: [-0.5, 29.5], y: [0, 1.25], xt: [0, 10, 20, 30], yt: [0, 1], xlabel: "$n$",
+          legend: [["input $x[n]$", C.soft, "stem"], ["output $y[n]$", C.blue, "stem"]],
+          layers: [{t: "stem", xs: ns, ys: x, color: C.soft, r: 3.2, w: 1.8}, {t: "stem", xs: ns, ys: y, color: C.blue, r: 3.2, w: 1.8}]}),
+        frSm({title: "Gain", flex: 0.8, w: 300, x: [0, 1], y: [0, 1.4], xt: [0, 0.5, 1], yt: [0, 1], xlabel: "$\\omega/\\pi$", layers: [{t: "line", xs: [0, 1], ys: [1, 1], color: C.blue, w: 3}]}),
+        frSm({title: "Phase $\\angle H / \\pi$", flex: 1, x: [0, 1], y: [-1.1, 1.1], xt: [0, 0.5, 1], yt: [-1, 0, 1], xlabel: "$\\omega/\\pi$",
+          layers: [{t: "dots", xs: ws, ys: ws.map((q) => wrapPi(-q * PI * d) / PI), color: C.aqua, r: 2}]}),
+      ],
+      cap: blocks([["System", `$y[n] = x[n - ${d}]$`], ["Transfer function", `$H(z) = z^{-${d}}$`], ["Frequency response", `$H(e^{j\\omega}) = e^{-j${d}\\omega}$`]]),
+    };
+  },
+});
+
+// ---- the DFT of simple signals: f_s = 100 Hz and N = 100, so X[k] sits at k Hz and every frequency is on a bin
+const DFTEX = {
+  one: ["One sinusoid", "$x[n] = \\cos(2\\pi \\cdot 5\\,n/f_s)$", (n) => Math.cos(TAU * 5 * n / 100), [[5, "$5$ Hz", "start"]]],
+  two: ["Two sinusoids", "$x[n] = \\cos(2\\pi \\cdot 5\\,n/f_s) + 0.5\\cos(2\\pi \\cdot 12\\,n/f_s)$", (n) => Math.cos(TAU * 5 * n / 100) + 0.5 * Math.cos(TAU * 12 * n / 100), [[5, "amplitude $1$", "start"], [12, "amplitude $0.5$", "start"]]],
+  dc: ["Sinusoid plus a constant", "$x[n] = 1 + \\cos(2\\pi \\cdot 5\\,n/f_s)$", (n) => 1 + Math.cos(TAU * 5 * n / 100), [[0, "DC component, $0$ Hz", "start"], [5, "$5$ Hz", "start"]]],
+  sq: ["Square wave", "$x[n] = 1$ for $n \\bmod 20 < 10$, $\\;x[n] = -1$ otherwise", (n) => (n % 20 < 10 ? 1 : -1), [[5, "$f_0 = 5$ Hz", "start"], [15, "$3f_0$", "start"], [25, "$5f_0$", "start"], [35, "$7f_0$", "start"], [45, "$9f_0$", "start"]], "harmonics of $f_0$"],
+};
+demo("dftex", {
+  controls: [{id: "s", type: "select", value: "one", options: Object.entries(DFTEX).map(([k, v]) => [k, v[0]])}],
+  draw: ({s}) => {
+    const [, cap, f, marks, note] = DFTEX[s], N = 100, ns = ints(0, N - 1), x = ns.map(f), ks = ints(0, N / 2);
+    const mag = ks.map((k) => Math.hypot(...dtftAt(x, 0, TAU * k / N)));
+    const labels = marks.map(([k, txt, anchor]) => ({t: "text", x: k + (anchor === "end" ? -1 : 1), y: Math.min(mag[k], 96) + 6, s: txt, anchor, w: 170}));
+    if (note) labels.push({t: "text", x: 24, y: 80, s: note, anchor: "start", w: 200});
+    return {
+      row: true,
+      figs: [
+        {flex: 1, w: 460, h: 205, m: {l: 58, r: 14, t: 16, b: 54}, x: [-0.02, 1.02], y: [-1.4, 2.2], xt: [0, 0.25, 0.5, 0.75, 1], yt: [-1, 0, 1, 2], xlabel: "time (s)", ylabel: "$x[n]$",
+          layers: [{t: "line", xs: ns.map((n) => n / 100), ys: x, color: C.soft, w: 1.4}, {t: "dots", xs: ns.map((n) => n / 100), ys: x, color: C.blue, r: 2.6}]},
+        {flex: 1, w: 460, h: 205, m: {l: 58, r: 14, t: 16, b: 54}, x: [-1.5, 51.5], y: [0, 108], xt: [0, 10, 20, 30, 40, 50], yt: [0, 25, 50, 75, 100], xlabel: "frequency (Hz)", ylabel: "$|X[k]|$",
+          layers: [{t: "stem", xs: ks, ys: mag, color: C.orange, r: 4.5, w: 2.4, skip: 1e-6}, ...labels]},
+      ],
+      cap,
+    };
+  },
+});
+
+
+/* ============== Lecture 3: filtering in the frequency domain ============== */
+// ---- Butterworth filters, designed the way scipy.signal.butter(n, Wn, btype, fs=fs, output="sos") does:
+// analog prototype poles, the low-pass to low/high/band transform, the bilinear transform. Complex numbers are [re, im].
+const cx = {
+  add: (a, b) => [a[0] + b[0], a[1] + b[1]],
+  sub: (a, b) => [a[0] - b[0], a[1] - b[1]],
+  mul: (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]],
+  div: (a, b) => { const d = b[0] * b[0] + b[1] * b[1]; return [(a[0] * b[0] + a[1] * b[1]) / d, (a[1] * b[0] - a[0] * b[1]) / d]; },
+  sqrt: (a) => { const r = Math.hypot(a[0], a[1]); return [Math.sqrt((r + a[0]) / 2), (a[1] < 0 ? -1 : 1) * Math.sqrt(Math.max(0, (r - a[0]) / 2))]; },
+  prod: (zs) => zs.reduce((acc, q) => cx.mul(acc, q), [1, 0]),
+};
+function butterZpk(order, btype, f, fs) {
+  const warp = (v) => 2 * fs * Math.tan(PI * v / fs), neg = (a) => [-a[0], -a[1]];
+  const p0 = ints(0, order - 1).map((i) => { const a = PI * (2 * i - order + 1) / (2 * order); return [-Math.cos(a), -Math.sin(a)]; });
+  const k0 = cx.div([1, 0], cx.prod(p0.map(neg)))[0];
+  let z = [], p, k;
+  if (btype === "lowpass" || btype === "highpass") {
+    const wo = warp(f[0]);
+    if (btype === "lowpass") { p = p0.map((q) => [q[0] * wo, q[1] * wo]); k = wo ** order; }
+    else { p = p0.map((q) => cx.div([wo, 0], q)); z = p0.map(() => [0, 0]); k = k0; }
+  } else {
+    const wl = warp(f[0]), wu = warp(f[1]), bw = wu - wl, wo2 = wl * wu;
+    const pl = btype === "bandpass" ? p0.map((q) => [q[0] * bw / 2, q[1] * bw / 2]) : p0.map((q) => cx.div([bw / 2, 0], q));
+    const root = pl.map((q) => cx.sqrt(cx.sub(cx.mul(q, q), [wo2, 0])));
+    p = [...pl.map((q, i) => cx.add(q, root[i])), ...pl.map((q, i) => cx.sub(q, root[i]))];
+    if (btype === "bandpass") { z = p0.map(() => [0, 0]); k = bw ** order; }
+    else { const wo = Math.sqrt(wo2); z = [...p0.map(() => [0, wo]), ...p0.map(() => [0, -wo])]; k = k0; }
+  }
+  const f2 = [2 * fs, 0], bil = (s) => cx.div(cx.add(f2, s), cx.sub(f2, s));
+  const kd = k * cx.div(cx.prod(z.map((s) => cx.sub(f2, s))), cx.prod(p.map((s) => cx.sub(f2, s))))[0];
+  return {z: [...z.map(bil), ...p.slice(z.length).map(() => [-1, 0])], p: p.map(bil), k: kd};
+}
+// |H(e^{jw})| from the zeros, poles and gain
+const zpkGain = ({z, p, k}, w) => {
+  const e = [Math.cos(w), Math.sin(w)];
+  return Math.abs(k) * z.reduce((g, q) => g * Math.hypot(...cx.sub(e, q)), 1) / p.reduce((g, q) => g * Math.hypot(...cx.sub(e, q)), 1);
+};
+// second-order sections [b, a]: each complex root with its conjugate, real roots two at a time; the gain goes in the first
+function zpkSos({z, p, k}) {
+  const groups = (rs) => {
+    const out = rs.filter((r) => r[1] > 1e-12).map((r) => [r, [r[0], -r[1]]]), re = rs.filter((r) => Math.abs(r[1]) <= 1e-12);
+    for (let i = 0; i < re.length; i += 2) out.push(re.slice(i, i + 2));
+    return out;
+  };
+  const poly = (g) => [1, -g.reduce((s, r) => s + r[0], 0), g.length === 2 ? cx.mul(g[0], g[1])[0] : 0];
+  const zg = groups(z), pg = groups(p);
+  return ints(0, Math.max(zg.length, pg.length) - 1).map((i) => {
+    const b = poly(zg[i] || []), a = poly(pg[i] || []);
+    return [i ? b : b.map((v) => v * k), a];
+  });
+}
+// scipy.signal.sosfilt: the sections in cascade, each in transposed direct form II, zero initial state
+const sosfilt = (sos, x) => sos.reduce((v, [b, a]) => {
+  let s1 = 0, s2 = 0;
+  return v.map((u) => { const o = b[0] * u + s1; s1 = b[1] * u - a[1] * o + s2; s2 = b[2] * u - a[2] * o; return o; });
+}, x);
+// ---- end Butterworth
+
+// ---- filter types: 2 s of a signal at fs = 100 Hz through a Butterworth filter (sosfilt). Left: time, right: the
+// one-sided amplitude spectrum, with the gain |H| over the input's. A terminal window in the slide holds the scipy calls.
+const FTFS = 100, FTN = 200;
+const ftNoise = (() => { const r = rand(11); return ints(0, FTN - 1).map(() => 0.4 * gauss(r)); })();
+const ftSin = (f, n) => Math.sin(TAU * f * n / FTFS);
+const FTSIG = {
+  three: ["Three sinusoids", "$x[n] = \\sin(2\\pi \\cdot 2\\,n/f_s) + 0.8\\sin(2\\pi \\cdot 12\\,n/f_s) + 0.6\\sin(2\\pi \\cdot 30\\,n/f_s)$", (n) => ftSin(2, n) + 0.8 * ftSin(12, n) + 0.6 * ftSin(30, n)],
+  noise: ["Sinusoid plus noise", "$x[n] = \\sin(2\\pi \\cdot 2\\,n/f_s) + \\text{noise}$", (n) => ftSin(2, n) + ftNoise[n]],
+  drift: ["Sinusoid plus drift", "$x[n] = 0.7\\sin(2\\pi \\cdot 10\\,n/f_s) + 1.5\\sin(2\\pi \\cdot 0.25\\,n/f_s)$", (n) => 0.7 * ftSin(10, n) + 1.5 * ftSin(0.25, n)],
+  square: ["Square wave", "$x[n] = 1$ for $n \\bmod 20 < 10$, $\\;x[n] = -1$ otherwise", (n) => (n % 20 < 10 ? 1 : -1)],
+};
+const FTYPE = {lp: ["Low-pass", "lowpass"], hp: ["High-pass", "highpass"], bp: ["Band-pass", "bandpass"], bs: ["Band-stop", "bandstop"]};
+const ftAmp = (v) => ints(0, FTN / 2).map((k) => (k === 0 || k === FTN / 2 ? 1 : 2) * Math.hypot(...dtftAt(v, 0, TAU * k / FTN)) / FTN);
+// one line of Python, syntax-coloured: tokens are [class, text]
+const pyLine = (toks) => toks.map(([c, s]) => (c ? `<span class="${c}">${esc(s)}</span>` : esc(s))).join("");
+demo("ftypes", {
+  controls: [
+    {id: "s", type: "select", label: "input", value: "three", options: Object.entries(FTSIG).map(([k, v]) => [k, v[0]])},
+    {id: "t", type: "select", label: "filter", value: "lp", options: Object.entries(FTYPE).map(([k, v]) => [k, v[0]])},
+    {id: "f1", label: "cutoff $f_c$ (Hz)", min: 0.5, max: 45, step: 0.5, value: 6, fmt: (v) => num(v, 1)},
+    {id: "f2", label: "cutoff $f_2$ (Hz)", min: 0.5, max: 45, step: 0.5, value: 20, fmt: (v) => num(v, 1)},
+    {id: "n", label: "order", min: 1, max: 8, step: 1, value: 4, fmt: (v) => `${v}`},
+  ],
+  init: (el) => {
+    const frame = el.closest(".sp-frame") || el;
+    const term = document.createElement("div");
+    term.className = "l3-term";
+    term.innerHTML = '<div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>python</span></div><div class="code"></div>';
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "l3-term-btn"; btn.textContent = "Python";
+    frame.append(term, btn);
+    btn.addEventListener("click", () => { term.hidden = !term.hidden; btn.blur(); });
+    term.querySelector(".r").addEventListener("click", () => { term.hidden = true; });
+    term.addEventListener("pointerdown", (e) => e.stopPropagation());
+    const bar = term.querySelector(".bar");
+    bar.addEventListener("pointerdown", (e) => {
+      if (e.target.closest("i")) return;
+      const fr = frame.getBoundingClientRect(), r = term.getBoundingClientRect(), k = fr.width / frame.offsetWidth;
+      const dx = e.clientX - r.left, dy = e.clientY - r.top;
+      bar.setPointerCapture(e.pointerId);
+      const mv = (m) => { term.style.left = (m.clientX - dx - fr.left) / k + "px"; term.style.top = Math.max(0, (m.clientY - dy - fr.top) / k) + "px"; term.style.right = term.style.bottom = "auto"; };
+      const up = () => { bar.removeEventListener("pointermove", mv); bar.removeEventListener("pointerup", up); };
+      bar.addEventListener("pointermove", mv); bar.addEventListener("pointerup", up);
+    });
+    el._code = term.querySelector(".code");
+  },
+  draw: ({s, t, f1, f2, n}, cfg, el) => {
+    const band = t === "bp" || t === "bs", ctl = (id) => el.querySelector(`input[data-id="${id}"]`).closest(".sp-ctl");
+    ctl("f2").style.display = band ? "" : "none";
+    const lab1 = ctl("f1").querySelector(".sp-lab"), raw1 = band ? "cutoff $f_1$ (Hz)" : "cutoff $f_c$ (Hz)";
+    if (lab1.dataset.raw !== raw1) { lab1.dataset.raw = raw1; lab1.innerHTML = texify(raw1); }
+    const lo = band ? Math.min(f1, f2) : f1, hi = band ? Math.max(Math.max(f1, f2), lo + 0.5) : f1;
+    const [, cap, sig] = FTSIG[s], [, btype] = FTYPE[t], zpk = butterZpk(n, btype, band ? [lo, hi] : [lo], FTFS);
+    const ns = ints(0, FTN - 1), ts = ns.map((i) => i / FTFS), x = ns.map(sig), y = sosfilt(zpkSos(zpk), x);
+    const fk = ints(0, FTN / 2).map((k) => k * FTFS / FTN), X = ftAmp(x), Y = ftAmp(y);
+    const fr = lin(0, FTFS / 2, 401), g = fr.map((f) => zpkGain(zpk, TAU * f / FTFS));
+    // where the gain label sits: the middle of a band the filter passes
+    const at = {lp: lo / 2, hp: (hi + 50) / 2, bp: (lo + hi) / 2, bs: lo > 50 - hi ? lo / 2 : (hi + 50) / 2}[t];
+    const time = (v, color, ylabel, bottom) => ({w: 560, h: bottom ? 212 : 184, m: {l: 62, r: 14, t: 10, b: bottom ? 50 : 26}, x: [0, 2], y: [-2.6, 2.6],
+      xt: [0, 0.5, 1, 1.5, 2], yt: [-2, 0, 2], xlabel: bottom ? "time (s)" : "", ylabel,
+      layers: [{t: "line", xs: ts, ys: v, color, w: 1.8}]});
+    const spec = (v, color, ylabel, bottom, extra = []) => ({w: 560, h: bottom ? 212 : 184, m: {l: 62, r: 14, t: 10, b: bottom ? 50 : 26}, x: [-0.6, 50.6], y: [0, 1.42],
+      xt: [0, 10, 20, 30, 40, 50], yt: [0, 0.5, 1], xlabel: bottom ? "frequency (Hz)" : "", ylabel,
+      layers: [...extra, {t: "stem", xs: fk, ys: v, color, r: 0, w: 2, skip: 2e-3}]});
+    const figs = [
+      time(x, C.orange, "$x[n]$", false),
+      spec(X, C.orange, "$|X|$", false, [{t: "area", xs: fr, ys: g, color: C.blue, op: 0.12},
+        {t: "line", xs: fr, ys: g, color: C.blue, w: 2.6}, {t: "text", x: at, y: 1.2, s: "$\\textcolor{#2a78d6}{|H|}$", anchor: "middle", w: 60}]),
+      time(y, C.blue, "$y[n]$", true),
+      spec(Y, C.blue, "$|Y|$", true),
+    ];
+    if (el._code) {
+      el._code.innerHTML = [
+        pyLine([["", "sos = "], ["fn", "butter"], ["", "("], ["nu", `${n}`], ["", ", "], ...(band ? [["", "["], ["nu", num(lo, 1)], ["", ", "], ["nu", num(hi, 1)], ["", "]"]] : [["nu", num(lo, 1)]]),
+          ["", ", "], ["ar", "btype"], ["", "="], ["st", `"${btype}"`], ["", ","]]),
+        pyLine([["", "             "], ["ar", "fs"], ["", "="], ["nu", `${FTFS}`], ["", ", "], ["ar", "output"], ["", "="], ["st", '"sos"'], ["", ")"]]),
+        pyLine([["", "y = "], ["fn", "sosfilt"], ["", "(sos, x)"]]),
+      ].join("\n");
+    }
+    return {
+      html: `<div class="sp-grid l3-ftgrid">${figs.map((f) => `<div class="sp-plot">${plot(f)}</div>`).join("")}</div>`,
+      cap: `${cap}, $\\;f_s = ${FTFS}$ Hz`,
+    };
+  },
+});
+
+
 /* ------------------------- mounting and plumbing ------------------------ */
 const texNodes = (root) => root.querySelectorAll?.("[data-tex]").forEach((n) => { n.innerHTML = texify(n.dataset.tex); });
 function scan(root) {
@@ -1930,20 +1998,172 @@ document.addEventListener("click", (e) => {
   const dir = e.target.closest?.(".navigate-right") ? 1 : e.target.closest?.(".navigate-left") ? -1 : 0;
   if (dir && stepMove(dir)) { e.preventDefault(); e.stopImmediatePropagation(); }
 }, true);
+// A dropdown, button or audio player keeps the keyboard after use, so the next arrow key would
+// change it or skip the slide's remaining steps. Hand the keyboard back to the deck.
+const releaseFocus = (e) => { const el = e.target; if (el instanceof HTMLElement && el.matches("select, button, audio, summary")) setTimeout(() => el.blur(), 0); };
+document.addEventListener("change", releaseFocus, true);
+document.addEventListener("play", releaseFocus, true);
+document.addEventListener("pause", releaseFocus, true);
+document.addEventListener("pointerup", (e) => { if (e.target.closest?.("button, summary")) releaseFocus({target: e.target.closest("button, summary")}); }, true);
+
+// ---- complex numbers: one point, two ways to write it
+demo("polar", {
+  controls: [
+    {id: "r", label: "magnitude $|z| = r$", min: 0.2, max: 2, step: 0.05, value: 1.5, fmt: (v) => `${num(v, 2)}`},
+    {id: "th", label: "phase $\\angle z = \\theta$ over $\\pi$", min: -1, max: 1, step: 0.01, value: 0.3, fmt: (v) => `$${num(v, 2)}\\pi$`},
+  ],
+  draw: ({r, th}) => {
+    const T = th * PI, a = r * Math.cos(T), b = r * Math.sin(T), circ = lin(0, TAU, 160);
+    return {
+      row: true,
+      figs: [
+        {title: "The complex plane", flex: 1, w: 420, h: 250, m: {l: 46, r: 12, t: 40, b: 50}, x: [-2.2, 2.2], y: [-2.2, 2.2], xt: [-2, -1, 0, 1, 2], yt: [-2, -1, 0, 1, 2], xlabel: "$\\mathrm{Re}\\,z$", ylabel: "$\\mathrm{Im}\\,z$",
+          layers: [
+            {t: "line", xs: circ.map((q) => r * Math.cos(q)), ys: circ.map((q) => r * Math.sin(q)), color: C.soft, w: 1.6, dash: "5 5"},
+            {t: "line", xs: [0, a], ys: [0, b], color: C.orange, w: 3},
+            {t: "dots", xs: [a], ys: [b], color: C.orange, r: 7},
+          ]},
+      ],
+      cap: blocks([
+        ["Rectangular: $a + jb$", `$${num(a, 2)} ${b < 0 ? "-" : "+"} ${num(Math.abs(b), 2)}\\,j$`],
+        ["Polar: $r\\,e^{j\\theta}$", `$|z| = ${num(r, 2)}$, $\\angle z = ${num(th, 2)}\\pi$`],
+      ]),
+    };
+  },
+});
+
+// ---- frequency-domain lowpass: keep the bins below the cutoff, transform back
+demo("fdfilter", {
+  controls: [{id: "fc", label: "cutoff $f_c$ (Hz)", min: 2, max: 120, step: 1, value: 30, fmt: (v) => `${v}`}],
+  draw: ({fc}) => {
+    const fs = 256, N = 256, ns = ints(0, N - 1), t = ns.map((n) => n / fs);
+    const x = ns.map((n) => Math.sin(TAU * 8 * n / N) + 0.6 * Math.sin(TAU * 60 * n / N));
+    const X = dftOf(x, N), M = magsOf(X);
+    const kept = (k) => Math.min(k, N - k) <= fc;
+    const Xr = new Float64Array(N), Xi = new Float64Array(N);
+    for (let k = 0; k < N; k++) if (kept(k)) { Xr[k] = X.re[k]; Xi[k] = X.im[k]; }
+    const y = ns.map((n) => {
+      let s = 0;
+      for (let k = 0; k < N; k++) s += Xr[k] * Math.cos(TAU * k * n / N) - Xi[k] * Math.sin(TAU * k * n / N);
+      return s / N;
+    });
+    const ks = ints(0, N / 2), amp = ks.map((k) => (k === 0 || k === N / 2 ? 1 : 2) * M[k] / N);
+    const keep = ks.filter(kept), drop = ks.filter((k) => !kept(k));
+    return {
+      row: true,
+      figs: [
+        {title: "Spectrum: one-sided amplitude", flex: 1, w: 480, h: 300, m: {l: 46, r: 12, t: 40, b: 50}, x: [0, N / 2], y: [0, 1.2], yt: [0, 0.5, 1], xlabel: "frequency (Hz)",
+          layers: [
+            {t: "stem", xs: keep, ys: keep.map((k) => amp[k]), color: C.blue, r: 3.2, w: 2},
+            {t: "stem", xs: drop, ys: drop.map((k) => amp[k]), color: C.soft, r: 3.2, w: 2},
+            {t: "vline", x: fc, color: C.orange, w: 1.6, dash: "4 4"},
+          ]},
+        {title: "Time signal", flex: 1, w: 480, h: 300, m: {l: 46, r: 12, t: 40, b: 50}, x: [0, 1], y: [-1.6, 1.6], yt: [-1, 0, 1], xlabel: "time (s)",
+          legend: [["input", C.soft, "line"], ["output", C.blue, "line"]],
+          layers: [{t: "line", xs: t, ys: x, color: C.soft, w: 1.6}, {t: "line", xs: t, ys: y, color: C.blue, w: 2.8}]},
+      ],
+      cap: blocks([["Mask", `$H[k] = 1$ below $${fc}$ Hz, $0$ above`], ["Output", "$Y[k] = H[k]\\,X[k]$, then the inverse DFT"]]),
+    };
+  },
+});
+
+// ---- filter types: Butterworth response from the analog prototype (bilinear transform)
+const cmul = (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]];
+const cadd = (a, b) => [a[0] + b[0], a[1] + b[1]];
+const csub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+const cdiv = (a, b) => { const d = b[0] * b[0] + b[1] * b[1]; return [(a[0] * b[0] + a[1] * b[1]) / d, (a[1] * b[0] - a[0] * b[1]) / d]; };
+const cabs = (a) => Math.hypot(a[0], a[1]);
+const cscale = (a, k) => [a[0] * k, a[1] * k];
+function butterPoles(n) {
+  const ps = [];
+  for (let k = 1; k <= n; k++) { const th = PI * (2 * k + n - 1) / (2 * n); ps.push([Math.cos(th), Math.sin(th)]); }
+  return ps;
+}
+function butterAt(type, n, f1, f2, fs, f) {
+  const ps = butterPoles(n), s = [0, 2 * fs * Math.tan(PI * f / fs)];
+  const warp = (fc) => 2 * fs * Math.tan(PI * fc / fs);
+  const G = ps.reduce((acc, p) => cmul(acc, [-p[0], -p[1]]), [1, 0]);
+  let H = G;
+  if (type === "lp") {
+    const Wn = warp(f1);
+    for (const p of ps) H = cdiv(H, csub(cscale(s, 1 / Wn), p));
+  } else if (type === "hp") {
+    const Wn = warp(f1);
+    for (const p of ps) H = cmul(H, cdiv(s, csub([Wn, 0], cmul(p, s))));
+  } else {
+    const wl = warp(Math.min(f1, f2)), wu = warp(Math.max(f1, f2));
+    const B = wu - wl, W0sq = wl * wu, S2 = cmul(s, s), W02 = [W0sq, 0];
+    for (const p of ps) {
+      if (type === "bp") H = cmul(H, cdiv(cscale(s, B), csub(cadd(S2, W02), cscale(cmul(p, s), B))));
+      else H = cmul(H, cdiv(cadd(S2, W02), csub(cscale(s, B), cadd(cmul(p, S2), cmul(p, W02)))));
+    }
+  }
+  return H;
+}
+demo("filter", {
+  controls: [
+    {id: "t", type: "select", label: "filter type", value: "lp", options: [["lp", "Low-pass"], ["hp", "High-pass"], ["bp", "Band-pass"], ["bs", "Band-stop"]]},
+    {id: "f1", label: "cutoff $f_1$ (Hz)", min: 0.5, max: 150, step: 0.5, value: 20, fmt: (v) => `${v}`},
+    {id: "f2", label: "upper cutoff $f_2$ (Hz), band types only", min: 10, max: 170, step: 1, value: 60, fmt: (v) => `${v}`},
+    {id: "n", label: "order $N$", min: 1, max: 8, step: 1, value: 4, fmt: (v) => `${v}`},
+  ],
+  draw: ({t, f1, f2, n}) => {
+    const fs = 360, fr = lin(0.5, 180, 360);
+    const H = fr.map((f) => butterAt(t, n, f1, f2, fs, f));
+    const mag = H.map(cabs), hi = Math.max(...mag);
+    const db = mag.map((m) => 20 * Math.log10(Math.max(m / hi, 1e-6)));
+    const phd = H.map((h) => Math.atan2(h[1], h[0]) / PI);
+    const wn = t === "lp" || t === "hp" ? `${f1}` : `[${Math.min(f1, f2)}, ${Math.max(f1, f2)}]`;
+    const bt = {lp: "lowpass", hp: "highpass", bp: "bandpass", bs: "bandstop"}[t];
+    const code = `from scipy.signal import butter, sosfreqz\nsos = butter(${n}, ${wn}, btype="${bt}", fs=360, output="sos")\nw, h = sosfreqz(sos, worN=4096, fs=360)`;
+    return {
+      row: true,
+      figs: [
+        {title: "Gain", flex: 1, w: 420, h: 280, m: {l: 52, r: 12, t: 40, b: 50}, x: [0, 180], y: [-60, 4], xt: [0, 50, 100, 150], yt: [-60, -40, -20, 0], xlabel: "frequency (Hz)", ylabel: "dB",
+          layers: [{t: "line", xs: fr, ys: db, color: C.blue, w: 3}]},
+        {title: "Phase", flex: 1, w: 420, h: 280, m: {l: 52, r: 12, t: 40, b: 50}, x: [0, 180], y: [-1.1, 1.1], xt: [0, 50, 100, 150], yt: [-1, 0, 1], xlabel: "frequency (Hz)", ylabel: "$\\angle H / \\pi$",
+          layers: [{t: "dots", xs: fr, ys: phd, color: C.aqua, r: 1.6}]},
+      ],
+      cap: `<pre class="sp-code">${esc(code)}</pre>`,
+    };
+  },
+});
 
 // ---- formula sheet: one floating note you can drag, resize and close; it stays open across slides
-const SHEET_ROWS = [
-  ["$\\delta[n]$", "$1$", ""], ["$\\delta[n-k]$", "$z^{-k}$", ""], ["$a^n u[n]$", "$\\dfrac{1}{1 - a z^{-1}}$", ""], ["$u[n]$", "$\\dfrac{1}{1 - z^{-1}}$", ""],
-  ["$a\\,x_1[n] + b\\,x_2[n]$", "$a\\,X_1(z) + b\\,X_2(z)$", "linearity"], ["$x[n-k]$", "$z^{-k}\\,X(z)$", "delay"], ["$x[n] * h[n]$", "$H(z)\\,X(z)$", "convolution"],
-];
+const SHEETS = {
+  l2: {heads: ["Time domain", "Z domain", ""], rows: [
+    ["$\\delta[n]$", "$1$", ""], ["$\\delta[n-k]$", "$z^{-k}$", ""], ["$a^n u[n]$", "$\\dfrac{1}{1 - a z^{-1}}$", ""], ["$u[n]$", "$\\dfrac{1}{1 - z^{-1}}$", ""],
+    ["$a\\,x_1[n] + b\\,x_2[n]$", "$a\\,X_1(z) + b\\,X_2(z)$", "linearity"], ["$x[n-k]$", "$z^{-k}\\,X(z)$", "delay"], ["$x[n] * h[n]$", "$H(z)\\,X(z)$", "convolution"],
+  ]},
+  l3: {heads: ["Quantity", "Formula", ""], rows: [
+    ["Polar form", "$a + jb = r\\,e^{j\\theta}$", "$r = \\sqrt{a^2 + b^2}$, $\\tan\\theta = b/a$"],
+    ["Euler", "$e^{j\\theta} = \\cos\\theta + j\\sin\\theta$", ""],
+    ["Product", "$r_1 e^{j\\theta_1}\\,r_2 e^{j\\theta_2} = r_1 r_2\\,e^{j(\\theta_1 + \\theta_2)}$", "magnitudes multiply, phases add"],
+    ["Frequency response", "$H(e^{j\\omega}) = \\sum_k h[k]\\,e^{-j\\omega k} = H(z)\\big|_{z = e^{j\\omega}}$", "$z$ on the unit circle"],
+    ["Sinusoid through the system", "$\\cos(\\omega n) \\to |H|\\cos(\\omega n + \\angle H)$", "$H = H(e^{j\\omega})$"],
+    ["Frequency in hertz", "$\\omega = 2\\pi f / f_s$", "$\\omega = \\pi$ is $f_s/2$"],
+    ["DTFT", "$X(e^{j\\omega}) = \\sum_n x[n]\\,e^{-j\\omega n}$", "same sum as $H(e^{j\\omega})$"],
+    ["DFT", "$X[k] = \\sum_{n=0}^{N-1} x[n]\\,e^{-j2\\pi kn/N}$", "$X(e^{j\\omega})$ at $\\omega_k = 2\\pi k/N$"],
+    ["Inverse DFT", "$x[n] = \\frac{1}{N}\\sum_{k=0}^{N-1} X[k]\\,e^{j2\\pi kn/N}$", "$n = 0, \\dots, N-1$"],
+    ["Bin frequency", "$f_k = k\\,f_s/N$", "frequency of $X[k]$, in Hz"],
+    ["Bin spacing", "$\\Delta f = f_s/N = 1/T$", "frequency resolution, $T = N/f_s$"],
+    ["Decibels", "$A_{\\text{dB}} = 20\\log_{10}(A/A_{\\text{ref}})$", "$\\times 10 \\to +20$ dB, $\\times 2 \\to +6$ dB"],
+    ["Hann window", "$w[n] = \\tfrac12\\big(1 - \\cos(2\\pi n/N)\\big)$", "less leakage, wider peak"],
+    ["Filtering", "$Y(e^{j\\omega}) = H(e^{j\\omega})\\,X(e^{j\\omega})$", "each frequency times its own $H$"],
+    ["Cutoff frequency", "$|H| = 1/\\sqrt2$", "$-3$ dB"],
+  ]},
+};
 let note = null;
-function toggleSheet() {
-  if (note) { note.hidden = !note.hidden; return; }
+function toggleSheet(key = "l2") {
+  if (note && note.dataset.key === key) { note.hidden = !note.hidden; return; }
+  if (note) note.remove();
+  const SH = SHEETS[key] || SHEETS.l2;
   note = document.createElement("div");
   note.className = "sp-note";
+  note.dataset.key = key;
   note.innerHTML = '<div class="hd"><span>Formula sheet</span><button type="button" class="x" aria-label="Close">×</button></div><div class="bd"><table>'
-    + '<tr><th>Time domain</th><th>Z domain</th><th></th></tr>'
-    + SHEET_ROWS.map((r) => "<tr>" + r.map((c, i) => `<td${i < 2 ? ` data-tex="${c.replace(/"/g, "&quot;")}"` : ""}>${i === 2 ? c : ""}</td>`).join("") + "</tr>").join("")
+    + "<tr>" + SH.heads.map((h) => `<th>${h}</th>`).join("") + "</tr>"
+    + SH.rows.map((r) => "<tr>" + r.map((c) => `<td data-tex="${c.replace(/"/g, "&quot;")}"></td>`).join("") + "</tr>").join("")
     + "</table></div>";
   document.body.appendChild(note);
   texNodes(note);
@@ -1961,13 +2181,24 @@ function toggleSheet() {
 }
 document.addEventListener("click", (e) => {
   const b = e.target.closest?.(".sp-sheet-btn");
-  if (b) { toggleSheet(); b.blur(); }
+  if (b) { toggleSheet(b.dataset.sheet || "l2"); b.blur(); }
 }, true);
 
 // Reveal.js swallows arrow keys and swipes; keep them for the controls.
 const guard = (e) => { if (e.target.closest?.(".sp-demo input, .sp-demo select, .sp-demo button, .sp-more summary")) e.stopPropagation(); };
 document.addEventListener("keydown", guard, true);
 document.addEventListener("pointerdown", (e) => { if (e.target.closest?.(".sp-demo, .sp-more, .sp-note")) e.stopPropagation(); });
+// Static figures and widgets mount from a MutationObserver. The exported WASM pages
+// can render cells without adding those nodes, so mount whatever is still unmounted
+// after load, keys, and clicks. mount and mountStatic are idempotent.
+const ensureMounted = () => {
+  document.querySelectorAll("[data-sp]").forEach(mount);
+  document.querySelectorAll("[data-sp-fig]").forEach(mountStatic);
+};
+window.addEventListener("load", ensureMounted);
+document.addEventListener("keydown", () => setTimeout(ensureMounted, 60));
+document.addEventListener("click", () => setTimeout(ensureMounted, 60));
+
 window.SP = {plot, DEMOS, C};
 })();
 </script>
